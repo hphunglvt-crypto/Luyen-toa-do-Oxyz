@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Luyện Tọa Độ Oxyz</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&display=swap">
+<style>
+/* Layout: graph-paper ground, one centred column; topic grid on home, question card + figure on quiz screens */
+:root{
+  --bg:#eef3f2; --card:#fbfdfc; --ink:#13303d; --mute:#5a727c; --line:#cfdcdc; --grid:#e3ecea;
+  --accent:#0a6a86; --accent-ink:#ffffff; --c0:#0a6a86; --c1:#c76a12; --c2:#2c8a4b;
+  --good:#1f7a43; --good-bg:#dff2e6; --bad:#b3261e; --bad-bg:#fbe4e1;
+  --sans:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --math:"Source Serif 4","Times New Roman",Georgia,serif;
+  --fs:16px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1b21; --card:#15262e; --ink:#e3eef0; --mute:#97b0b8; --line:#2a424c; --grid:#1a2d35;
+  --accent:#4cc3e3; --accent-ink:#06222b; --c0:#4cc3e3; --c1:#f0a04b; --c2:#62c887;
+  --good:#7ddc9f; --good-bg:#17382a; --bad:#ff9a91; --bad-bg:#43211e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1b21; --card:#15262e; --ink:#e3eef0; --mute:#97b0b8; --line:#2a424c; --grid:#1a2d35;
+  --accent:#4cc3e3; --accent-ink:#06222b; --c0:#4cc3e3; --c1:#f0a04b; --c2:#62c887;
+  --good:#7ddc9f; --good-bg:#17382a; --bad:#ff9a91; --bad-bg:#43211e; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; font:var(--fs)/1.55 var(--sans); color:var(--ink); background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px; min-height:100vh;
+  padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px)); padding-block:20px 48px;
+}
+body.big{--fs:21px}
+.wrap{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand h1{margin:0;font-size:1.5em;line-height:1.2;text-wrap:balance;letter-spacing:-.01em}
+.brand p{margin:2px 0 0;color:var(--mute);font-size:.88em}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{font-size:.85em;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);white-space:nowrap}
+.chip b{font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--card);padding:8px 14px;border-radius:8px;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.vec{position:relative;display:inline-block;font-family:var(--math);font-style:italic;font-weight:600;line-height:1;margin-top:.5em}
+.vec::before{content:"→";position:absolute;left:0;right:0;top:-.95em;text-align:center;font-style:normal;font-size:.8em;line-height:1;font-family:var(--sans)}
+.mf{font-family:var(--math);font-size:1.02em}
+sub{font-size:.7em;line-height:0}
+
+.lead{margin:0;color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.topic{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.topic:hover{border-color:var(--accent)}
+.topic .tag{font-size:.72em;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.topic h3{margin:0;font-size:1.02em}
+.topic .f{font-family:var(--math);color:var(--mute);font-size:.95em;line-height:2}
+.challenge{border:2px solid var(--accent);background:var(--card);border-radius:12px;padding:18px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.challenge h2{margin:0 0 4px;font-size:1.15em}
+.challenge p{margin:0;color:var(--mute);max-width:52ch}
+.board{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.board h2{margin:0 0 8px;font-size:1em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92em}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+th{color:var(--mute);font-weight:600;font-size:.82em}
+.note{font-size:.82em;color:var(--mute);margin:8px 0 0}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.prog{height:8px;border-radius:99px;background:var(--grid);border:1px solid var(--line);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.qtitle{font-size:.8em;color:var(--mute);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.qtext{font-size:1.18em;line-height:2.1;margin:0;font-family:var(--math)}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{display:flex;gap:10px;align-items:center;text-align:left;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:12px 14px;font-family:var(--math);font-size:1.1em;min-width:0;overflow-wrap:anywhere}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{font-family:var(--sans);font-size:.75em;font-weight:700;width:1.9em;height:1.9em;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;flex:none}
+.opt.right{background:var(--good-bg);border-color:var(--good)}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad)}
+.opt:disabled{cursor:default;color:inherit}
+.fb{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:16px;align-items:start;border-top:1px dashed var(--line);padding-top:16px}
+.fb[hidden]{display:none!important}
+.verdict{font-weight:700;margin:0 0 6px}
+.verdict.ok{color:var(--good)} .verdict.no{color:var(--bad)}
+.why{font-family:var(--math);line-height:2.1}
+.figure{width:100%;max-width:300px;justify-self:center}
+.figure svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.nextrow{grid-column:1/-1;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.legend{font-weight:600}
+input[type=text]{font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.check{display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--bg);cursor:pointer;min-width:0}
+.check input{width:1.1em;height:1.1em;accent-color:var(--accent);flex:none}
+.big-result{text-align:center;padding:12px 0}
+.big-result .num{font-size:3em;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.sum div{border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center;background:var(--bg)}
+.sum b{display:block;font-size:1.3em;font-variant-numeric:tabular-nums}
+.sum span{font-size:.8em;color:var(--mute)}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.msg{font-size:.85em;color:var(--bad);min-height:1.2em;margin:0}
+
+/* figure svg */
+.g-grid{stroke:var(--grid);stroke-width:1}
+.g-axis{stroke:var(--mute);stroke-width:1.3}
+.g-tick{fill:var(--mute);font:9px var(--sans)}
+.g-pt{fill:var(--ink)}
+.g-txt{fill:var(--ink);font:italic 600 13px var(--math);paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
+.g-poly{fill:none;stroke:var(--mute);stroke-width:1.2;stroke-dasharray:4 3}
+.g-v0{stroke:var(--c0);stroke-width:2.2;fill:none} .g-v1{stroke:var(--c1);stroke-width:2.2;fill:none} .g-v2{stroke:var(--c2);stroke-width:2.2;fill:none}
+.mk0{fill:var(--c0)} .mk1{fill:var(--c1)} .mk2{fill:var(--c2)}
+
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr}
+  .fb{grid-template-columns:1fr}
+  .brand h1{font-size:1.3em}
+}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+.limitrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.limitrow .note{margin:0}
+select{font:inherit;padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:max-content}
+
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.3;margin:0 .15em;font-size:.95em}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .25em}
+.fr>span:last-child{padding:0 .25em}
+.sys{display:inline-flex;flex-direction:column;vertical-align:middle;border-left:2px solid currentColor;border-radius:8px 0 0 8px;padding:.1em 0 .1em .7em;margin:.25em .3em;line-height:1.6;text-align:left}
+.g-fill{fill:var(--c0);opacity:.18;stroke:none}
+.g-sph{fill:none;stroke:var(--c1);stroke-width:1.4}
+.g-sph2{fill:none;stroke:var(--c1);stroke-width:1.1;stroke-dasharray:4 3}
+.mkax{fill:var(--mute)}
+.qtext,.opt,.why,.topic .f{line-height:2.2}
+.opt{line-height:1.9}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Luyện Tọa Độ Oxyz</h1>
+      <p>Toán lớp 12 · Phương pháp tọa độ trong không gian</p>
+    </div>
+    <div class="tools">
+      <span class="chip">Kỷ lục: <b id="record">0</b> điểm</span>
+      <button class="btn ghost" id="btnBig" type="button" aria-pressed="false" title="Phóng to chữ để chiếu lên màn hình lớp">Chế độ trình chiếu</button>
+    </div>
+  </header>
+
+  <!-- HOME -->
+  <main id="home" class="wrap" style="gap:20px">
+    <div class="limitrow"><label for="limitHome">Số câu mỗi dạng</label><select id="limitHome"><option>5</option><option>10</option><option>15</option><option>20</option></select><span class="note">Mỗi câu chỉ xuất hiện một lần trong một lượt làm.</span></div>
+    <p class="lead">Chọn một dạng để luyện từng công thức, hoặc vào Thử thách để thi đấu chuỗi 20 câu. Phím 1–4 hoặc A–D chọn đáp án, Enter sang câu tiếp.</p>
+    <section class="grid" id="topics" aria-label="Các dạng luyện tập"></section>
+    <section class="challenge">
+      <div>
+        <h2>Thử thách chuỗi 20 câu</h2>
+        <p>Nhập tên, chọn các dạng muốn thi. Đúng +1 điểm, sai −2 điểm và chuỗi về 0. Trả lời đúng 20 câu liên tiếp để thắng.</p>
+      </div>
+      <button class="btn primary" id="btnChallenge" type="button">Vào thử thách</button>
+    </section>
+    <section class="board" id="board" hidden>
+      <h2>Bảng vinh danh trên máy này</h2>
+      <div class="tablewrap"><table><thead><tr><th>Học sinh</th><th>Điểm</th><th>Chuỗi dài nhất</th><th>Kết quả</th><th>Ngày</th></tr></thead><tbody id="boardBody"></tbody></table></div>
+      <p class="note">Bảng này lưu trong trình duyệt của thiết bị đang dùng, không đồng bộ giữa các máy.</p>
+      <button class="btn ghost" id="btnClear" type="button" style="margin-top:8px">Xóa bảng</button>
+    </section>
+  </main>
+
+  <!-- SETUP -->
+  <section id="setup" class="panel" hidden>
+    <div class="bar"><h2 style="margin:0">Thiết lập thử thách</h2><button class="btn ghost" data-go="home" type="button">Hủy</button></div>
+    <div class="field">
+      <label for="name">Họ và tên học sinh</label>
+      <input type="text" id="name" maxlength="40" autocomplete="off" placeholder="Ví dụ: Nguyễn Minh Anh">
+    </div>
+    <div class="field">
+      <span class="legend">Các dạng tham gia</span>
+      <div class="checks" id="checks"></div>
+    </div>
+    <div class="field">
+      <label for="limitSetup">Số câu tối đa mỗi dạng</label>
+      <select id="limitSetup"><option>5</option><option>10</option><option>15</option><option>20</option></select>
+      <span class="note" style="margin:0">Mỗi câu chỉ xuất hiện một lần. Cần tổng số câu (số dạng × số câu mỗi dạng) từ 20 trở lên để có thể thắng.</span>
+    </div>
+    <p class="msg" id="setupMsg" role="alert"></p>
+    <div><button class="btn primary" id="btnStart" type="button">Bắt đầu (+1 / −2)</button></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="panel" hidden>
+    <div class="bar">
+      <div class="stats" id="stats"></div>
+      <button class="btn ghost" id="btnExit" type="button">Thoát</button>
+    </div>
+    <div class="prog" id="progWrap" hidden><i id="prog"></i></div>
+    <div>
+      <div class="qtitle" id="qtitle"></div>
+      <p class="qtext" id="qtext"></p>
+    </div>
+    <div class="opts" id="opts" role="group" aria-label="Các đáp án"></div>
+    <div class="fb" id="fb" hidden aria-live="polite">
+      <div>
+        <p class="verdict" id="verdict"></p>
+        <div class="why" id="why"></div>
+      </div>
+      <div class="figure" id="figure"></div>
+      <div class="nextrow"><button class="btn primary" id="btnNext" type="button">Câu tiếp theo ➔</button></div>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="panel" hidden>
+    <div class="big-result">
+      <div class="qtitle" id="resName"></div>
+      <div class="num" id="resScore">0</div>
+      <p id="resMsg" class="lead"></p>
+    </div>
+    <div class="sum" id="resSum"></div>
+    <div class="row"><button class="btn primary" id="btnAgain" type="button">Chơi lại</button><button class="btn" data-go="home" type="button">Về trang chủ</button></div>
+  </section>
+</div>
+
+<script>
+//<GEN
+const ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const nz=(a,b)=>{let v;do v=ri(a,b);while(v===0);return v};
+const pick=a=>a[ri(0,a.length-1)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=ri(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const N=x=>x<0?'−'+(-x):''+x;
+const PR=x=>x<0?'('+N(x)+')':''+x;
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const R=(n,d=1)=>{const g=gcd(n,d)||1;n/=g;d/=g;if(d<0){n=-n;d=-d}return[n,d]};
+const cf=a=>a===1?'':a===-1?'−':N(a);
+const sg=()=>pick([-1,1]);
+const fr=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const frS=(n,d)=>{const r=R(n,d);return r[1]===1?N(r[0]):`${r[0]<0?'−':''}${fr(Math.abs(r[0]),r[1])}`};
+function sq(n){if(n<=0)return '0';let k=1,m=n;for(let f=Math.floor(Math.sqrt(n));f>1;f--){if(n%(f*f)===0){k=f;m=n/(f*f);break}}if(m===1)return ''+k;return (k>1?k:'')+'√'+m}
+const V=s=>`<span class="vec">${s}</span>`;
+const P3=(x,y,z)=>`(${N(x)}; ${N(y)}; ${N(z)})`;
+const PT3=(n,p)=>`${n}${P3(p[0],p[1],p[2])}`;
+const dot3=(p,q)=>p[0]*q[0]+p[1]*q[1]+p[2]*q[2];
+const cross3=(p,q)=>[p[1]*q[2]-p[2]*q[1],p[2]*q[0]-p[0]*q[2],p[0]*q[1]-p[1]*q[0]];
+const add3=(p,q)=>[p[0]+q[0],p[1]+q[1],p[2]+q[2]];
+const sub3=(p,q)=>[p[0]-q[0],p[1]-q[1],p[2]-q[2]];
+const mul3=(k,p)=>[k*p[0],k*p[1],k*p[2]];
+const zero3=p=>p[0]===0&&p[1]===0&&p[2]===0;
+const par3=(p,q)=>zero3(cross3(p,q));
+const g3=a=>a.reduce((g,v)=>gcd(g,Math.abs(v)),0)||1;
+const rp3=(m=5)=>[ri(-m,m),ri(-m,m),ri(-m,m)];
+const len2=p=>dot3(p,p);
+const TR3=[[1,2,2,3],[2,1,2,3],[2,2,1,3],[2,3,6,7],[3,2,6,7],[6,2,3,7],[2,6,3,7],[1,4,8,9],[4,4,7,9],[8,4,1,9],[2,6,9,11],[3,4,12,13]];
+const nrm=()=>{const t=pick(TR3);return{n:[t[0]*sg(),t[1]*sg(),t[2]*sg()],len:t[3]}};
+const TR2=[[3,4,5],[4,3,5],[6,8,10],[5,12,13],[8,6,10]];
+
+/* ---- mặt phẳng ---- */
+function planeS(a,b,c,d){
+  const t=[[a,'x'],[b,'y'],[c,'z']].filter(([k])=>k!==0);
+  let o='';
+  t.forEach(([k,v],i)=>{const ab=Math.abs(k);o+=(i===0?(k<0?'−':''):(k<0?' − ':' + '))+(ab===1?'':ab)+v});
+  if(d!==0)o+=(d<0?' − ':' + ')+Math.abs(d);
+  return o+' = 0';
+}
+function normPl(a,b,c,d){const g=g3([a,b,c,d]);let v=[a,b,c,d].map(x=>x/g);const f=v.find(x=>x!==0);if(f<0)v=v.map(x=>-x);return v.join(',')}
+function planeOpts(c,ws){
+  const seen=new Set([normPl(...c)]),w=[];
+  for(const x of ws){if(zero3(x.slice(0,3)))continue;const k=normPl(...x);if(!seen.has(k)){seen.add(k);w.push(planeS(...x))}}
+  return{correct:planeS(...c),wrongs:w};
+}
+const padPl=c=>()=>{for(let i=0;i<30;i++){const x=c.map(v=>v+ri(-2,2));if(!zero3(x.slice(0,3))&&normPl(...x)!==normPl(...c))return planeS(...x)}return planeS(c[0]+1,c[1],c[2],c[3]+1)};
+function vecOpts(c,ws){
+  const w=[];for(const x of ws){if(zero3(x)||par3(x,c))continue;const s=P3(...x);if(!w.includes(s))w.push(s)}
+  return{correct:P3(...c),wrongs:w};
+}
+const padVec=c=>()=>{for(let i=0;i<30;i++){const x=c.map(v=>v+ri(-2,2));if(!zero3(x)&&!par3(x,c))return P3(...x)}return P3(c[0]+1,c[1],c[2]+2)};
+
+/* ---- đường thẳng ---- */
+function comp(v,m,u){
+  let s='';
+  if(m!==0)s+=N(m);
+  if(u!==0){const a=Math.abs(u),t=(a===1?'':a)+'t';s+=s?(u<0?' − ':' + ')+t:(u<0?'−':'')+t}
+  if(s==='')s='0';
+  return `${v} = ${s}`;
+}
+const sysH=(M,u)=>`<span class="sys"><span>${comp('x',M[0],u[0])}</span><span>${comp('y',M[1],u[1])}</span><span>${comp('z',M[2],u[2])}</span></span>`;
+const sameLine=(M1,u1,M2,u2)=>par3(u1,u2)&&par3(sub3(M2,M1),u1);
+function lineOpts(c,ws){
+  const w=[],used=[c];
+  for(const x of ws){if(zero3(x[1]))continue;if(used.some(y=>sameLine(y[0],y[1],x[0],x[1])))continue;used.push(x);w.push(sysH(x[0],x[1]))}
+  return{correct:sysH(c[0],c[1]),wrongs:w};
+}
+const padLine=c=>()=>{for(let i=0;i<30;i++){const M=c[0].map(v=>v+ri(-2,2)),u=c[1].map(v=>v+ri(-1,1));if(!zero3(u)&&!sameLine(c[0],c[1],M,u))return sysH(M,u)}return sysH(add3(c[0],[1,2,3]),c[1])};
+
+/* ---- mặt cầu ---- */
+const sqT=(v,a)=>a===0?`${v}²`:`(${v} ${a<0?'+':'−'} ${Math.abs(a)})²`;
+const sphS=(I,r2)=>`${sqT('x',I[0])} + ${sqT('y',I[1])} + ${sqT('z',I[2])} = ${r2}`;
+const sphX=(I,d)=>{
+  let o='x² + y² + z²';
+  [[I[0],'x'],[I[1],'y'],[I[2],'z']].forEach(([a,v])=>{if(a!==0){const k=-2*a,ab=Math.abs(k);o+=(k<0?' − ':' + ')+(ab===1?'':ab)+v}});
+  if(d!==0)o+=(d<0?' − ':' + ')+Math.abs(d);
+  return o+' = 0';
+};
+const ctr=(I)=>`I${P3(...I)}`;
+
+const planeM=(a,b,d)=>{let o='';[[a,'x'],[b,'y']].filter(([k])=>k!==0).forEach(([k,v],i)=>{const ab=Math.abs(k);o+=(i===0?(k<0?'−':''):(k<0?' − ':' + '))+(ab===1?'':ab)+v});o+=(o?' + ':'')+'mz';if(d!==0)o+=(d<0?' − ':' + ')+Math.abs(d);return o+' = 0'};
+const sysZm=(M,u1,u2)=>`<span class="sys"><span>${comp('x',M[0],u1)}</span><span>${comp('y',M[1],u2)}</span><span>z = ${M[2]!==0?N(M[2])+' + ':''}mt</span></span>`;
+const GEN={1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
+
+/* ======== Dạng 1: phương trình mặt phẳng ======== */
+GEN[1].push(()=>{
+  let n;do n=[ri(-4,4),ri(-4,4),ri(-4,4)];while(zero3(n)||g3(n)!==1);
+  const M=rp3(4),s=dot3(n,M),d=-s;
+  const o=planeOpts([...n,d],[[...n,s],[...n,0],[n[0],n[1],n[2],d+ri(1,3)],[n[1],n[0],n[2],d],[n[0],n[1],-n[2],d]]);
+  return{t:`Trong không gian Oxyz, phương trình mặt phẳng (P) đi qua điểm ${PT3('M',M)} và nhận ${V('n')} = ${P3(...n)} làm vectơ pháp tuyến là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padPl([...n,d]),
+    why:`Mặt phẳng qua M(x<sub>0</sub>; y<sub>0</sub>; z<sub>0</sub>) có vectơ pháp tuyến (a; b; c) là a(x − x<sub>0</sub>) + b(y − y<sub>0</sub>) + c(z − z<sub>0</sub>) = 0. Khai triển: ${planeS(n[0],n[1],n[2],0).replace(' = 0','')} ${d<0?'−':'+'} ${Math.abs(d)} = 0 (hệ số tự do d = −(${PR(n[0])}·${PR(M[0])} + ${PR(n[1])}·${PR(M[1])} + ${PR(n[2])}·${PR(M[2])}) = ${N(d)}). Vậy (P): ${o.correct}.`,
+    fig:{pts:[['M',...M]],vecs:[{a:M,b:add3(M,n),l:'n',c:0}]},chk:{ok:dot3(n,M)+d===0}};
+});
+GEN[1].push(()=>{
+  const n=[nz(-4,4),ri(-4,4),nz(-4,4)],d=nz(-6,6);
+  const o=vecOpts(n,[[n[0],n[1],d],[n[1],n[0],n[2]],[n[0],-n[1],n[2]],[-n[0],n[1],n[2]],[n[0],n[1],-n[2]],[n[2],n[1],n[0]]]);
+  return{t:`Trong không gian Oxyz, cho mặt phẳng (P): ${planeS(n[0],n[1],n[2],d)}. Một vectơ pháp tuyến của (P) là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padVec(n),
+    why:`Mặt phẳng ax + by + cz + d = 0 có một vectơ pháp tuyến là (a; b; c) = ${P3(...n)}.`,fig:null,chk:{ok:true}};
+});
+GEN[1].push(()=>{
+  let A,B,C,n;do{A=rp3(4);B=rp3(4);C=rp3(4);n=cross3(sub3(B,A),sub3(C,A))}while(zero3(n)||g3(n)>6);
+  const g=g3(n);n=n.map(v=>v/g);const f=n.find(v=>v!==0);if(f<0)n=n.map(v=>-v);
+  const d=-dot3(n,A);
+  const o=planeOpts([...n,d],[[...n,-d],[...n,d+1],[-n[0],n[1],n[2],d],[n[0],-n[1],n[2],d],[n[0],n[1],-n[2],d],[...sub3(B,A),d]]);
+  const AB=sub3(B,A),AC=sub3(C,A);
+  return{t:`Trong không gian Oxyz, phương trình mặt phẳng (ABC) với ${PT3('A',A)}, ${PT3('B',B)}, ${PT3('C',C)} là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padPl([...n,d]),
+    why:`${V('AB')} = ${P3(...AB)}, ${V('AC')} = ${P3(...AC)}. Vectơ pháp tuyến ${V('n')} = [${V('AB')}, ${V('AC')}] = ${P3(...cross3(AB,AC))}, chọn ${P3(...n)}. Mặt phẳng qua A: ${o.correct}.`,
+    fig:{pts:[['A',...A],['B',...B],['C',...C]],vecs:[],poly:[A,B,C,A]},chk:{ok:[A,B,C].every(p=>dot3(n,p)+d===0)}};
+});
+GEN[1].push(()=>{
+  let e;do e=rp3(3);while(zero3(e));
+  const A=rp3(4),B=add3(A,mul3(2,e)),M=add3(A,e),d=-dot3(e,M);
+  const o=planeOpts([...e,d],[[...e,-dot3(e,A)],[...e,-dot3(e,B)],[...e,-d],[...add3(A,B),d],[e[0],e[1],-e[2],d]]);
+  return{t:`Trong không gian Oxyz, cho hai điểm ${PT3('A',A)} và ${PT3('B',B)}. Phương trình mặt phẳng trung trực của đoạn thẳng AB là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padPl([...e,d]),
+    why:`Mặt phẳng trung trực của AB đi qua trung điểm M${P3(...M)} và nhận ${V('AB')} = ${P3(...mul3(2,e))} (hay ${P3(...e)}) làm vectơ pháp tuyến. Phương trình: ${o.correct}.`,
+    fig:{pts:[['A',...A],['B',...B],['M',...M]],vecs:[],poly:[A,B]},chk:{ok:dot3(e,M)+d===0&&dot3(e,sub3(A,M))*dot3(e,sub3(B,M))<=0}};
+});
+GEN[1].push(()=>{
+  let n;do n=[ri(-4,4),ri(-4,4),ri(-4,4)];while(zero3(n)||g3(n)!==1);
+  const d0=nz(-6,6),M=rp3(4),d=-dot3(n,M);
+  const o=planeOpts([...n,d],[[...n,d0],[...n,-d],[...n,-d0],[n[0],n[1],n[2],d+1]]);
+  return{t:`Trong không gian Oxyz, cho mặt phẳng (Q): ${planeS(n[0],n[1],n[2],d0)} và điểm ${PT3('M',M)}. Mặt phẳng (P) đi qua M và song song với (Q) có phương trình là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padPl([...n,d]),
+    why:`(P) ∥ (Q) nên (P) nhận ${P3(...n)} làm vectơ pháp tuyến: (P): ${planeS(n[0],n[1],n[2],0).replace(' = 0','')} + d = 0. Vì M ∈ (P) nên d = −(${PR(n[0])}·${PR(M[0])} + ${PR(n[1])}·${PR(M[1])} + ${PR(n[2])}·${PR(M[2])}) = ${N(d)}. Vậy (P): ${o.correct}.`,
+    fig:null,chk:{ok:dot3(n,M)+d===0}};
+});
+GEN[1].push(()=>{
+  const a=pick([1,2,3,-1,-2]),b=nz(-3,3),c=nz(-3,3),m0=nz(-5,5),y=ri(-4,4),z=ri(-4,4),d=-(a*m0+b*y+c*z);
+  return{t:`Trong không gian Oxyz, cho mặt phẳng (P): ${planeS(a,b,c,d)}. Điểm ${PT3('M',[0,y,z]).replace('(0;','(m;')} thuộc mặt phẳng (P) khi m bằng:`,
+    correct:N(m0),wrongs:[N(-m0),N(m0+1),N(m0-1),N(a*m0)],pad:()=>N(m0+ri(-5,5)),
+    why:`M ∈ (P) ⇔ ${PR(a)}m + ${PR(b)}·${PR(y)} + ${PR(c)}·${PR(z)} + ${PR(d)} = 0 ⇔ ${N(a)}m = ${N(a*m0)} ⇔ m = ${N(m0)}.`,
+    fig:null,chk:{ok:a*m0+b*y+c*z+d===0}};
+});
+
+/* ======== Dạng 2: khoảng cách và vị trí tương đối của mặt phẳng ======== */
+GEN[2].push(()=>{
+  const {n,len}=nrm(),M=rp3(5),k=nz(-4,4),d=k*len-dot3(n,M),K=Math.abs(k);
+  return{t:`Trong không gian Oxyz, khoảng cách từ điểm ${PT3('M',M)} đến mặt phẳng (P): ${planeS(n[0],n[1],n[2],d)} bằng:`,
+    correct:''+K,wrongs:[''+(K*len),''+(K+1),''+(K+2),K>1?''+(K-1):''+(K*3)],pad:()=>''+ri(1,14),
+    why:`d(M, (P)) = |ax<sub>0</sub> + by<sub>0</sub> + cz<sub>0</sub> + d| / √(a² + b² + c²) = |${N(dot3(n,M)+d)}| / √${len2(n)} = ${Math.abs(k*len)}/${len} = ${K}.`,
+    fig:null,chk:{ok:Math.abs(Math.abs(dot3(n,M)+d)/Math.sqrt(len2(n))-K)<1e-9}};
+});
+GEN[2].push(()=>{
+  const {n,len}=nrm(),d1=nz(-9,9),k=nz(-4,4),d2=d1+k*len,K=Math.abs(k);
+  return{t:`Trong không gian Oxyz, khoảng cách giữa hai mặt phẳng song song (P): ${planeS(n[0],n[1],n[2],d1)} và (Q): ${planeS(n[0],n[1],n[2],d2)} bằng:`,
+    correct:''+K,wrongs:[''+(K*len),''+(K+1),''+(K*2),K>1?''+(K-1):''+(K+3)],pad:()=>''+ri(1,14),
+    why:`Hai mặt phẳng song song nên d((P), (Q)) = |d<sub>1</sub> − d<sub>2</sub>| / √(a² + b² + c²) = |${N(d1)} − ${PR(d2)}| / √${len2(n)} = ${Math.abs(d1-d2)}/${len} = ${K}.`,
+    fig:null,chk:{ok:Math.abs(Math.abs(d1-d2)/Math.sqrt(len2(n))-K)<1e-9}};
+});
+GEN[2].push(()=>{
+  const n=[nz(-3,3),nz(-3,3),nz(-3,3)],d1=nz(-5,5),k=pick([-3,-2,2,3]),m0=k*n[2];let d2=k*d1+nz(-4,4);
+  return{t:`Trong không gian Oxyz, cho hai mặt phẳng (P): ${planeS(n[0],n[1],n[2],d1)} và (Q): ${planeM(k*n[0],k*n[1],d2)}. Hai mặt phẳng song song với nhau khi m bằng:`,
+    correct:N(m0),wrongs:[N(-m0),N(n[2]),N(m0+k),N(k+n[2])],pad:()=>N(m0+ri(-5,5)),
+    why:`(P) ∥ (Q) ⇔ ${fr('a','a′')} = ${fr('b','b′')} = ${fr('c','c′')} ≠ ${fr('d','d′')}. Tỉ số ${frS(n[0],k*n[0])} = ${frS(1,k)}, nên ${N(n[2])}/m = ${frS(1,k)} ⇒ m = ${N(m0)}. Với m = ${N(m0)}, d′ = ${N(d2)} ≠ ${N(k*d1)} nên hai mặt phẳng không trùng nhau.`,
+    fig:null,chk:{ok:par3([n[0],n[1],n[2]],[k*n[0],k*n[1],m0])&&d2!==k*d1}};
+});
+GEN[2].push(()=>{
+  const c=pick([1,-1,2,-2]),b=pick([1,-1]),a=nz(-3,3),m0=nz(-4,4),a2=nz(-3,3),b2=-(a*a2+c*m0)/b;
+  const d1=nz(-5,5),d2=nz(-5,5);
+  return{t:`Trong không gian Oxyz, cho hai mặt phẳng (P): ${planeS(a,b,c,d1)} và (Q): ${planeM(a2,b2,d2)}. Hai mặt phẳng vuông góc với nhau khi m bằng:`,
+    correct:N(m0),wrongs:[N(-m0),N(m0+1),N(m0-1),N(a*a2)],pad:()=>N(m0+ri(-5,5)),
+    why:`(P) ⊥ (Q) ⇔ ${V('n')}<sub>P</sub> · ${V('n')}<sub>Q</sub> = 0 ⇔ ${PR(a)}·${PR(a2)} + ${PR(b)}·${PR(b2)} + ${PR(c)}·m = 0 ⇔ ${N(a*a2+b*b2)} + ${PR(c)}m = 0 ⇔ m = ${N(m0)}.`,
+    fig:null,chk:{ok:a*a2+b*b2+c*m0===0}};
+});
+GEN[2].push(()=>{
+  const kind=pick(['par','same','perp','cut']);let n1,n2,d1,d2,ans;
+  n1=[nz(-3,3),nz(-3,3),nz(-3,3)];d1=nz(-5,5);
+  if(kind==='par'||kind==='same'){const k=pick([-2,2,3,-3]);n2=mul3(k,n1);d2=kind==='same'?k*d1:k*d1+nz(-4,4);ans=kind==='same'?'Trùng nhau':'Song song'}
+  else if(kind==='perp'){do{n2=[nz(-3,3),nz(-3,3),0];n2[2]=-(n1[0]*n2[0]+n1[1]*n2[1])/n1[2]}while(!Number.isInteger(n2[2])||zero3(n2)||Math.abs(n2[2])>6);d2=nz(-5,5);ans='Vuông góc với nhau'}
+  else{do{n2=[nz(-3,3),nz(-3,3),nz(-3,3)]}while(par3(n1,n2)||dot3(n1,n2)===0);d2=nz(-5,5);ans='Cắt nhau nhưng không vuông góc'}
+  const all=['Song song','Trùng nhau','Vuông góc với nhau','Cắt nhau nhưng không vuông góc'];
+  const why={'Song song':`Hai vectơ pháp tuyến cùng phương (tỉ lệ), còn d<sub>2</sub> ≠ k·d<sub>1</sub>, nên (P) ∥ (Q).`,'Trùng nhau':`Các hệ số của (Q) bằng đúng k lần các hệ số của (P) (kể cả số hạng tự do) nên hai mặt phẳng trùng nhau.`,'Vuông góc với nhau':`${V('n')}<sub>P</sub> · ${V('n')}<sub>Q</sub> = ${N(dot3(n1,n2))} = 0 nên (P) ⊥ (Q).`,'Cắt nhau nhưng không vuông góc':`Hai vectơ pháp tuyến không cùng phương nên hai mặt phẳng cắt nhau; ${V('n')}<sub>P</sub> · ${V('n')}<sub>Q</sub> = ${N(dot3(n1,n2))} ≠ 0 nên không vuông góc.`};
+  return{t:`Trong không gian Oxyz, cho hai mặt phẳng (P): ${planeS(...n1,d1)} và (Q): ${planeS(...n2,d2)}. Vị trí tương đối của (P) và (Q) là:`,
+    correct:ans,wrongs:all.filter(x=>x!==ans),pad:()=>ans,why:why[ans],fig:null,chk:{ok:true}};
+});
+
+/* ======== Dạng 3: phương trình đường thẳng ======== */
+GEN[3].push(()=>{
+  const M=rp3(4),u=[ri(-3,3),ri(-3,3),ri(-3,3)];if(zero3(u))u[0]=2;
+  const o=lineOpts([M,u],[[M,[-u[0],u[1],u[2]]],[M,[u[1],u[0],u[2]]],[u,M],[add3(M,[1,1,0]),u],[M,[u[0],u[1],-u[2]]],[M,mul3(2,u).map((v,i)=>v+(i===0?1:0))]]);
+  return{t:`Trong không gian Oxyz, phương trình tham số của đường thẳng d đi qua điểm ${PT3('M',M)} và có vectơ chỉ phương ${V('u')} = ${P3(...u)} là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padLine([M,u]),
+    why:`Đường thẳng qua M(x<sub>0</sub>; y<sub>0</sub>; z<sub>0</sub>) có vectơ chỉ phương (a; b; c) có phương trình tham số x = x<sub>0</sub> + at, y = y<sub>0</sub> + bt, z = z<sub>0</sub> + ct. Thay số ta được hệ ở đáp án đúng.`,
+    fig:{pts:[['M',...M]],vecs:[{a:M,b:add3(M,u),l:'u',c:0}]},chk:{ok:true}};
+});
+GEN[3].push(()=>{
+  const M=rp3(4),u=[nz(-4,4),ri(-4,4),nz(-4,4)];
+  const o=vecOpts(u,[[M[0],M[1],M[2]],[u[1],u[0],u[2]],[u[0],-u[1],u[2]],[-u[0],u[1],u[2]],[u[2],u[1],u[0]],add3(M,u)]);
+  return{t:`Trong không gian Oxyz, cho đường thẳng d: ${sysH(M,u)} Một vectơ chỉ phương của d là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padVec(u),
+    why:`Với d: x = x<sub>0</sub> + at, y = y<sub>0</sub> + bt, z = z<sub>0</sub> + ct, vectơ chỉ phương là (a; b; c) = ${P3(...u)} (hệ số của t).`,fig:null,chk:{ok:true}};
+});
+GEN[3].push(()=>{
+  const M=rp3(4),u=[nz(-3,3),nz(-3,3),ri(-3,3)],t0=nz(-3,3),X=add3(M,mul3(t0,u));
+  const w=[add3(X,[1,0,0]),add3(X,[0,-1,1]),add3(M,mul3(t0,[u[0],u[1],-u[2]])),add3(M,mul3(-t0,u)).map((v,i)=>v+(i===2?1:0))];
+  const ws=[];for(const x of w){if(!par3(sub3(x,M),u)&&!ws.some(y=>y.join()===x.join()))ws.push(x)}
+  return{t:`Trong không gian Oxyz, cho đường thẳng d: ${sysH(M,u)} Điểm nào sau đây thuộc d?`,
+    correct:`N${P3(...X)}`,wrongs:ws.map(x=>`N${P3(...x)}`),pad:()=>`N${P3(...add3(X,[ri(-2,2),ri(1,2),ri(-2,2)]))}`,
+    why:`Thay t = ${N(t0)} vào phương trình của d ta được x = ${N(X[0])}, y = ${N(X[1])}, z = ${N(X[2])}. Vậy N${P3(...X)} thuộc d. Các điểm còn lại không có giá trị t chung cho cả ba tọa độ.`,
+    fig:{pts:[['M',...M],['N',...X]],vecs:[{a:M,b:add3(M,u),l:'u',c:0}]},chk:{ok:par3(sub3(X,M),u)}};
+});
+GEN[3].push(()=>{
+  let A,B;do{A=rp3(4);B=rp3(4)}while(A.join()===B.join());
+  const u=sub3(B,A);
+  const o=lineOpts([A,u],[[B,A],[A,add3(A,B)],[A,[u[1],u[0],u[2]]],[A,[u[0],-u[1],u[2]]],[add3(A,[0,1,0]),u],[B,[-u[0],-u[1],-u[2]].map((v,i)=>i===0?v+1:v)]]);
+  return{t:`Trong không gian Oxyz, phương trình tham số của đường thẳng AB với ${PT3('A',A)} và ${PT3('B',B)} là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padLine([A,u]),
+    why:`Đường thẳng AB nhận ${V('AB')} = ${P3(...u)} làm vectơ chỉ phương và đi qua A. Phương trình tham số ở đáp án đúng.`,
+    fig:{pts:[['A',...A],['B',...B]],vecs:[{a:A,b:B,l:'AB',c:0}]},chk:{ok:true}};
+});
+GEN[3].push(()=>{
+  const n=[ri(-3,3),ri(-3,3),ri(-3,3)];if(zero3(n))n[1]=2;
+  const M=rp3(4),d=nz(-5,5);
+  const o=lineOpts([M,n],[[M,[n[0],n[1],-n[2]]],[M,[n[1],n[0],n[2]]],[M,[n[0],-n[1],n[2]]],[M,[...sub3(M,[0,0,0])]],[add3(M,[1,0,0]),n],[M,[n[0]+1,n[1],n[2]]]]);
+  return{t:`Trong không gian Oxyz, cho mặt phẳng (P): ${planeS(n[0],n[1],n[2],d)} và điểm ${PT3('M',M)}. Phương trình tham số của đường thẳng d đi qua M và vuông góc với (P) là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padLine([M,n]),
+    why:`d ⊥ (P) nên vectơ chỉ phương của d là vectơ pháp tuyến của (P): ${V('u')} = ${P3(...n)}. Đường thẳng qua M với vectơ chỉ phương ${P3(...n)} có phương trình ở đáp án đúng.`,
+    fig:{pts:[['M',...M]],vecs:[{a:M,b:add3(M,n),l:'n',c:0}]},chk:{ok:true}};
+});
+GEN[3].push(()=>{
+  const M=rp3(4),u=[nz(-3,3),nz(-3,3),nz(-3,3)],t0=nz(-3,3),X=add3(M,mul3(t0,u));
+  return{t:`Trong không gian Oxyz, cho đường thẳng d: ${sysH(M,u)} Điểm ${PT3('A',[X[0],X[1],0]).replace(/; 0\)$/,'; m)')} thuộc d khi m bằng:`,
+    correct:N(X[2]),wrongs:[N(-X[2]),N(M[2]),N(X[2]+u[2]),N(X[2]-u[2])],pad:()=>N(X[2]+ri(-5,5)),
+    why:`Từ x = ${N(X[0])} tìm được t = ${N(t0)}. Kiểm tra y = ${N(X[1])} đúng với t = ${N(t0)}. Khi đó m = z = ${N(M[2])} ${u[2]<0?'−':'+'} ${Math.abs(u[2])}·${PR(t0)} = ${N(X[2])}.`,
+    fig:null,chk:{ok:X[2]===M[2]+t0*u[2]}};
+});
+
+/* ======== Dạng 4: đường thẳng và mặt phẳng ======== */
+GEN[4].push(()=>{
+  let n,u,X;do{n=[ri(-3,3),ri(-3,3),ri(-3,3)];u=[ri(-3,3),ri(-3,3),ri(-3,3)]}while(zero3(n)||zero3(u)||dot3(n,u)===0);
+  X=rp3(4);const t0=nz(-3,3),M=sub3(X,mul3(t0,u)),d=-dot3(n,X);
+  const w=[M,add3(X,[1,0,0]),add3(M,u),mul3(-1,X)];const ws=[];for(const x of w){if(x.join()!==X.join()&&!ws.some(y=>y.join()===x.join()))ws.push(x)}
+  return{t:`Trong không gian Oxyz, cho đường thẳng d: ${sysH(M,u)} và mặt phẳng (P): ${planeS(n[0],n[1],n[2],d)}. Tọa độ giao điểm của d và (P) là:`,
+    correct:P3(...X),wrongs:ws.map(x=>P3(...x)),pad:()=>P3(...add3(X,[ri(-2,2),ri(-2,2),ri(1,2)])),
+    why:`Điểm chung có dạng (${comp('x',M[0],u[0]).slice(4)}; ${comp('y',M[1],u[1]).slice(4)}; ${comp('z',M[2],u[2]).slice(4)}). Thay vào phương trình (P) ta được ${N(dot3(n,u))}t ${dot3(n,M)+d<0?'−':'+'} ${Math.abs(dot3(n,M)+d)} = 0 ⇔ t = ${N(t0)}. Giao điểm là ${P3(...X)}.`,
+    fig:{pts:[['G',...X]],vecs:[{a:M,b:add3(M,u),l:'d',c:0}]},chk:{ok:dot3(n,X)+d===0&&par3(sub3(X,M),u)}};
+});
+GEN[4].push(()=>{
+  const c=pick([1,-1,2,-2]),a=nz(-3,3),b=nz(-3,3),u1=nz(-3,3),u2=nz(-3,3);
+  let m;
+  if((a*u1+b*u2)%c!==0)return GEN[4][1]();
+  m=-(a*u1+b*u2)/c;
+  const M=rp3(3);let d=nz(-6,6);if(dot3([a,b,c],M)+d===0)d+=1;
+  return{t:`Trong không gian Oxyz, cho đường thẳng d: ${sysZm(M,u1,u2)} và mặt phẳng (P): ${planeS(a,b,c,d)}. Đường thẳng d song song với (P) khi m bằng:`,
+    correct:N(m),wrongs:[N(-m),N(m+1),N(m-1),N(a*u1+b*u2)],pad:()=>N(m+ri(-5,5)),
+    why:`d có vectơ chỉ phương ${V('u')} = ${P3(u1,u2,m).replace(N(m),'m')}, (P) có vectơ pháp tuyến ${V('n')} = ${P3(a,b,c)}. d ∥ (P) ⇔ ${V('u')} · ${V('n')} = 0 ⇔ ${N(a*u1)} ${b*u2<0?'−':'+'} ${Math.abs(b*u2)} ${c<0?'−':'+'} ${Math.abs(c)}m = 0 ⇔ m = ${N(m)}. Điểm M${P3(...M)} của d không thuộc (P) nên d không nằm trong (P).`,
+    fig:null,chk:{ok:a*u1+b*u2+c*m===0&&dot3([a,b,c],M)+d!==0}};
+});
+GEN[4].push(()=>{
+  const n=[nz(-3,3),nz(-3,3),nz(-3,3)],k=pick([-3,-2,2,3]),M=rp3(3),d=nz(-6,6);
+  const m=k*n[2];
+  return{t:`Trong không gian Oxyz, cho đường thẳng d: ${sysZm(M,k*n[0],k*n[1])} và mặt phẳng (P): ${planeS(n[0],n[1],n[2],d)}. Đường thẳng d vuông góc với (P) khi m bằng:`,
+    correct:N(m),wrongs:[N(-m),N(n[2]),N(m+k),N(k+n[2])],pad:()=>N(m+ri(-5,5)),
+    why:`d ⊥ (P) ⇔ vectơ chỉ phương của d cùng phương với vectơ pháp tuyến ${P3(...n)}. Tỉ số ${frS(k*n[0],n[0])} = ${N(k)}, nên m = ${N(k)}·${PR(n[2])} = ${N(m)}.`,
+    fig:null,chk:{ok:par3([k*n[0],k*n[1],m],n)}};
+});
+GEN[4].push(()=>{
+  const kind=pick(['par','same','cut','skew']);
+  let M1=rp3(3),u1=[nz(-3,3),nz(-3,3),ri(-3,3)],M2,u2,ans;
+  if(kind==='par'||kind==='same'){const k=pick([-2,2,3]);u2=mul3(k,u1);M2=kind==='same'?add3(M1,mul3(nz(-2,2),u1)):add3(M1,[1,-2,3]);ans=kind==='same'?'Trùng nhau':'Song song';
+    if(kind==='par'&&par3(sub3(M2,M1),u1))M2=add3(M2,[0,0,1])}
+  else if(kind==='cut'){do{u2=[nz(-3,3),ri(-3,3),nz(-3,3)]}while(par3(u1,u2));const X=add3(M1,mul3(nz(-2,2),u1));M2=sub3(X,mul3(nz(-2,2),u2));ans='Cắt nhau'}
+  else{do{u2=[ri(-3,3),nz(-3,3),nz(-3,3)];M2=rp3(3)}while(par3(u1,u2)||dot3(sub3(M2,M1),cross3(u1,u2))===0);ans='Chéo nhau'}
+  const all=['Song song','Trùng nhau','Cắt nhau','Chéo nhau'];
+  const nn=cross3(u1,u2);
+  const why={'Song song':`${V('u')}<sub>2</sub> = k${V('u')}<sub>1</sub> nhưng điểm M<sub>2</sub> không thuộc d<sub>1</sub> nên hai đường thẳng song song.`,'Trùng nhau':`${V('u')}<sub>2</sub> = k${V('u')}<sub>1</sub> và M<sub>2</sub> thuộc d<sub>1</sub> nên hai đường thẳng trùng nhau.`,'Cắt nhau':`Hai vectơ chỉ phương không cùng phương và [${V('u')}<sub>1</sub>, ${V('u')}<sub>2</sub>] · ${V('M<sub>1</sub>M<sub>2</sub>')} = 0 nên hai đường thẳng đồng phẳng và cắt nhau.`,'Chéo nhau':`Hai vectơ chỉ phương không cùng phương và [${V('u')}<sub>1</sub>, ${V('u')}<sub>2</sub>] · ${V('M<sub>1</sub>M<sub>2</sub>')} = ${N(dot3(nn,sub3(M2,M1)))} ≠ 0 nên hai đường thẳng không đồng phẳng, tức là chéo nhau.`};
+  // independent check: least squares distance between lines
+  let chkOk=true;
+  {const w=sub3(M1,M2),a=dot3(u1,u1),b=dot3(u1,u2),c=dot3(u2,u2),d=dot3(u1,w),e=dot3(u2,w),den=a*c-b*b;
+   if(den!==0){const t=(b*e-c*d)/den,s=(a*e-b*d)/den;const D=len2(sub3(add3(w,mul3(t,u1)),mul3(s,u2)));chkOk=(ans==='Cắt nhau')?Math.abs(D)<1e-9:(ans==='Chéo nhau'&&D>1e-6)}
+   else chkOk=(ans==='Trùng nhau')?par3(sub3(M2,M1),u1):(ans==='Song song'&&!par3(sub3(M2,M1),u1))}
+  return{t:`Trong không gian Oxyz, cho hai đường thẳng d<sub>1</sub>: ${sysH(M1,u1)} và d<sub>2</sub>: ${sysH(M2,u2).replace(/t/g,'s')} Vị trí tương đối của d<sub>1</sub> và d<sub>2</sub> là:`,
+    correct:ans,wrongs:all.filter(x=>x!==ans),pad:()=>ans,why:why[ans],fig:null,chk:{ok:chkOk}};
+});
+
+/* ======== Dạng 5: góc ======== */
+const fracS=(n,d)=>{const r=R(n,d);return r[1]===1?N(r[0]):`${r[0]<0?'−':''}${fr(Math.abs(r[0]),r[1])}`};
+GEN[5].push(()=>{
+  let a,b,dd;do{const t1=pick(TR3),t2=pick(TR3);a=[t1[0]*sg(),t1[1]*sg(),t1[2]*sg()];b=[t2[0]*sg(),t2[1]*sg(),t2[2]*sg()];
+    if(Math.random()<.5)a=[a[1],a[2],a[0]];dd=dot3(a,b)}while(dd===0);
+  const la=Math.sqrt(len2(a)),lb=Math.sqrt(len2(b)),ans=fracS(Math.abs(dd),la*lb),M1=rp3(3),M2=rp3(3);
+  return{t:`Trong không gian Oxyz, cho hai đường thẳng d<sub>1</sub>: ${sysH(M1,a)} và d<sub>2</sub>: ${sysH(M2,b).replace(/t/g,'s')} Côsin của góc giữa hai đường thẳng d<sub>1</sub> và d<sub>2</sub> bằng:`,
+    correct:ans,wrongs:[fracS(-Math.abs(dd),la*lb),fracS(Math.abs(dd),la*lb+1),fracS(Math.abs(dd)+1,la*lb),fracS(la*lb,Math.abs(dd)>1?Math.abs(dd):2)],pad:()=>fracS(ri(1,20),ri(21,70)),
+    why:`cos(d<sub>1</sub>, d<sub>2</sub>) = |${V('u')}<sub>1</sub> · ${V('u')}<sub>2</sub>| / (|${V('u')}<sub>1</sub>| · |${V('u')}<sub>2</sub>|) = |${N(dd)}| / (${la} · ${lb}) = ${ans}.`,
+    fig:null,chk:{ok:Math.abs(Math.abs(dd)/(la*lb)-Math.abs(dd)/Math.sqrt(len2(a)*len2(b)))<1e-12&&Number.isInteger(la)&&Number.isInteger(lb)}};
+});
+GEN[5].push(()=>{
+  let u,n,dd;do{const t1=pick(TR3),t2=pick(TR3);u=[t1[0]*sg(),t1[1]*sg(),t1[2]*sg()];n=[t2[0]*sg(),t2[1]*sg(),t2[2]*sg()];if(Math.random()<.5)n=[n[2],n[0],n[1]];dd=dot3(u,n)}while(dd===0);
+  const lu=Math.sqrt(len2(u)),ln=Math.sqrt(len2(n)),ans=fracS(Math.abs(dd),lu*ln),M=rp3(3),d0=nz(-6,6);
+  return{t:`Trong không gian Oxyz, cho đường thẳng d: ${sysH(M,u)} và mặt phẳng (P): ${planeS(n[0],n[1],n[2],d0)}. Gọi φ là góc giữa d và (P). Giá trị sin φ bằng:`,
+    correct:ans,wrongs:[fracS(-Math.abs(dd),lu*ln),fracS(Math.abs(dd),lu*ln+1),fracS(Math.abs(dd)+1,lu*ln),fracS(lu*ln,Math.abs(dd)>1?Math.abs(dd):2)],pad:()=>fracS(ri(1,20),ri(21,70)),
+    why:`sin φ = |${V('u')} · ${V('n')}| / (|${V('u')}| · |${V('n')}|) = |${N(dd)}| / (${lu} · ${ln}) = ${ans}.`,fig:null,chk:{ok:Number.isInteger(lu)&&Number.isInteger(ln)}};
+});
+GEN[5].push(()=>{
+  let n1,n2,dd;do{const t1=pick(TR3),t2=pick(TR3);n1=[t1[0]*sg(),t1[1]*sg(),t1[2]*sg()];n2=[t2[0]*sg(),t2[1]*sg(),t2[2]*sg()];if(Math.random()<.5)n2=[n2[1],n2[2],n2[0]];dd=dot3(n1,n2)}while(dd===0);
+  const l1=Math.sqrt(len2(n1)),l2=Math.sqrt(len2(n2)),ans=fracS(Math.abs(dd),l1*l2);
+  return{t:`Trong không gian Oxyz, cho hai mặt phẳng (P): ${planeS(...n1,nz(-6,6))} và (Q): ${planeS(...n2,nz(-6,6))}. Côsin của góc giữa hai mặt phẳng (P) và (Q) bằng:`,
+    correct:ans,wrongs:[fracS(-Math.abs(dd),l1*l2),fracS(Math.abs(dd),l1*l2+1),fracS(Math.abs(dd)+1,l1*l2),fracS(l1*l2,Math.abs(dd)>1?Math.abs(dd):2)],pad:()=>fracS(ri(1,20),ri(21,70)),
+    why:`cos((P), (Q)) = |${V('n')}<sub>P</sub> · ${V('n')}<sub>Q</sub>| / (|${V('n')}<sub>P</sub>| · |${V('n')}<sub>Q</sub>|) = |${N(dd)}| / (${l1} · ${l2}) = ${ans}.`,fig:null,chk:{ok:Number.isInteger(l1)&&Number.isInteger(l2)}};
+});
+const permute=(v,p)=>[v[p[0]],v[p[1]],v[p[2]]];
+GEN[5].push(()=>{
+  const cases=[[[1,0,0],[1,1,0],45],[[1,1,0],[0,1,1],60],[[1,0,0],[0,1,0],90],[[1,-1,0],[0,1,1],60],[[1,0,1],[1,0,-1],90],[[0,0,1],[1,0,1],45],[[1,1,0],[1,0,0],45]];
+  const [a0,b0,ang]=pick(cases),p=pick([[0,1,2],[1,2,0],[2,0,1],[0,2,1],[1,0,2],[2,1,0]]);
+  const a=mul3(ri(1,3)*sg(),permute(a0,p)),b=mul3(ri(1,3)*sg(),permute(b0,p));
+  const M1=rp3(3),M2=rp3(3),opts=[30,45,60,90],cosv={45:'√2/2',60:'1/2',90:'0'};
+  return{t:`Trong không gian Oxyz, cho hai đường thẳng d<sub>1</sub>: ${sysH(M1,a)} và d<sub>2</sub>: ${sysH(M2,b).replace(/t/g,'s')} Góc giữa hai đường thẳng d<sub>1</sub> và d<sub>2</sub> bằng:`,
+    correct:ang+'°',wrongs:opts.filter(x=>x!==ang).map(x=>x+'°'),pad:()=>pick([0,15,75,120,135])+'°',
+    why:`|cos(d<sub>1</sub>, d<sub>2</sub>)| = |${V('u')}<sub>1</sub> · ${V('u')}<sub>2</sub>| / (|${V('u')}<sub>1</sub>| · |${V('u')}<sub>2</sub>|) = ${cosv[ang]}. Vậy góc bằng ${ang}°.`,
+    fig:null,chk:{ok:Math.abs(Math.acos(Math.abs(dot3(a,b))/Math.sqrt(len2(a)*len2(b)))*180/Math.PI-ang)<1e-6}};
+});
+GEN[5].push(()=>{
+  const cases=[[[1,1,0],[1,0,0],45],[[1,0,0],[1,0,0],90],[[1,1,0],[0,0,1],0],[[1,1,0],[0,1,1],30],[[0,0,1],[1,1,0],0],[[1,0,1],[0,1,0],0]];
+  const [u0,n0,ang]=pick(cases),p=pick([[0,1,2],[1,2,0],[2,0,1],[0,2,1],[1,0,2],[2,1,0]]);
+  const u=mul3(ri(1,3)*sg(),permute(u0,p)),n=mul3(ri(1,3)*sg(),permute(n0,p)),M=rp3(3),d0=nz(-5,5);
+  const sinv={45:'√2/2',90:'1',0:'0',30:'1/2'};
+  return{t:`Trong không gian Oxyz, cho đường thẳng d: ${sysH(M,u)} và mặt phẳng (P): ${planeS(...n,d0)}. Góc giữa đường thẳng d và mặt phẳng (P) bằng:`,
+    correct:ang+'°',wrongs:[0,30,45,60,90].filter(x=>x!==ang).map(x=>x+'°'),pad:()=>pick([15,75,120,135])+'°',
+    why:`sin φ = |${V('u')} · ${V('n')}| / (|${V('u')}| · |${V('n')}|) = ${sinv[ang]}. Vậy φ = ${ang}°.`,
+    fig:null,chk:{ok:Math.abs(Math.asin(Math.abs(dot3(u,n))/Math.sqrt(len2(u)*len2(n)))*180/Math.PI-ang)<1e-6}};
+});
+GEN[5].push(()=>{
+  const cases=[[[1,1,0],[0,1,1],60],[[1,0,0],[1,1,0],45],[[0,0,1],[1,1,0],90],[[1,1,0],[1,-1,0],90],[[1,0,0],[0,1,1],90],[[1,1,0],[1,0,1],60]];
+  const [a0,b0,ang]=pick(cases),p=pick([[0,1,2],[1,2,0],[2,0,1],[0,2,1],[1,0,2],[2,1,0]]);
+  const a=mul3(ri(1,3)*sg(),permute(a0,p)),b=mul3(ri(1,3)*sg(),permute(b0,p));
+  const cosv={45:'√2/2',60:'1/2',90:'0'};
+  return{t:`Trong không gian Oxyz, cho hai mặt phẳng (P): ${planeS(...a,nz(-5,5))} và (Q): ${planeS(...b,nz(-5,5))}. Góc giữa hai mặt phẳng (P) và (Q) bằng:`,
+    correct:ang+'°',wrongs:[30,45,60,90].filter(x=>x!==ang).map(x=>x+'°'),pad:()=>pick([0,15,75,120])+'°',
+    why:`cos((P), (Q)) = |${V('n')}<sub>P</sub> · ${V('n')}<sub>Q</sub>| / (|${V('n')}<sub>P</sub>| · |${V('n')}<sub>Q</sub>|) = ${cosv[ang]}. Vậy góc bằng ${ang}°.`,
+    fig:null,chk:{ok:Math.abs(Math.acos(Math.abs(dot3(a,b))/Math.sqrt(len2(a)*len2(b)))*180/Math.PI-ang)<1e-6}};
+});
+
+/* ======== Dạng 6: mặt cầu ======== */
+const rtxt=r2=>{const s=sq(r2);return s};
+GEN[6].push(()=>{
+  const I=rp3(4),r2=pick([4,9,16,25,36,5,7,10,13,3]);
+  const ok=`${ctr(I)}, R = ${rtxt(r2)}`;
+  const ws=[`${ctr(mul3(-1,I))}, R = ${rtxt(r2)}`,`${ctr(I)}, R = ${r2}`,`${ctr(mul3(-1,I))}, R = ${r2}`,`${ctr([I[1],I[0],I[2]])}, R = ${rtxt(r2)}`];
+  return{t:`Trong không gian Oxyz, mặt cầu (S): ${sphS(I,r2)} có tâm và bán kính là:`,
+    correct:ok,wrongs:ws,pad:()=>`${ctr(add3(I,[ri(-1,1),ri(-1,1),1]))}, R = ${rtxt(r2)}`,
+    why:`Mặt cầu (x − a)² + (y − b)² + (z − c)² = R² có tâm I(a; b; c) và bán kính R. Ở đây R² = ${r2} nên R = ${rtxt(r2)}, tâm ${ctr(I)}.`,
+    fig:{pts:[['I',...I]],vecs:[],sphere:{c:I,r:Math.sqrt(r2)}},chk:{ok:true}};
+});
+GEN[6].push(()=>{
+  const I=rp3(4),r=ri(2,7),r2=r*r;
+  const ws=[sphS(I,r),sphS(mul3(-1,I),r2),sphS([I[1],I[0],I[2]],r2),sphS(I,2*r)];
+  return{t:`Trong không gian Oxyz, phương trình mặt cầu có tâm ${ctr(I)} và bán kính R = ${r} là:`,
+    correct:sphS(I,r2),wrongs:ws.filter(x=>x!==sphS(I,r2)),pad:()=>sphS(add3(I,[ri(-1,1),ri(-1,1),ri(-1,1)]),r2+ri(-3,3)),
+    why:`Phương trình mặt cầu: (x − ${PR(I[0])})² + (y − ${PR(I[1])})² + (z − ${PR(I[2])})² = R² = ${r2}.`,
+    fig:{pts:[['I',...I]],vecs:[],sphere:{c:I,r}},chk:{ok:true}};
+});
+GEN[6].push(()=>{
+  let e;do e=[ri(-3,3),ri(-3,3),ri(-3,3)];while(zero3(e));
+  const A=rp3(4),B=add3(A,mul3(2,e)),I=add3(A,e),r2=len2(e);
+  const ws=[sphS(I,len2(mul3(2,e))),sphS(A,r2),sphS(add3(A,B),r2),sphS(mul3(-1,I),r2)];
+  return{t:`Trong không gian Oxyz, cho hai điểm ${PT3('A',A)} và ${PT3('B',B)}. Phương trình mặt cầu đường kính AB là:`,
+    correct:sphS(I,r2),wrongs:ws.filter(x=>x!==sphS(I,r2)),pad:()=>sphS(I,r2+ri(-4,4)),
+    why:`Tâm I là trung điểm AB: I${P3(...I)}. Bán kính R = AB/2 = √${r2}. Vậy (S): ${sphS(I,r2)}.`,
+    fig:{pts:[['A',...A],['B',...B],['I',...I]],vecs:[],poly:[A,B],sphere:{c:I,r:Math.sqrt(r2)}},chk:{ok:len2(sub3(A,I))===r2&&len2(sub3(B,I))===r2}};
+});
+GEN[6].push(()=>{
+  const I=rp3(4),r2=pick([4,9,16,25,5,7,10,13,3,6]),d=len2(I)-r2;
+  const ok=`${ctr(I)}, R = ${rtxt(r2)}`;
+  return{t:`Trong không gian Oxyz, mặt cầu (S): ${sphX(I,d)} có tâm và bán kính là:`,
+    correct:ok,wrongs:[`${ctr(mul3(-1,I))}, R = ${rtxt(r2)}`,`${ctr(mul3(-2,I))}, R = ${rtxt(r2)}`,`${ctr(I)}, R = ${rtxt(len2(I)+d>0?len2(I)+d:r2+3)}`,`${ctr(I)}, R = ${len2(I)-d>0?len2(I)-d:r2+2}`],
+    pad:()=>`${ctr(add3(I,[ri(-1,1),ri(-1,1),1]))}, R = ${rtxt(r2)}`,
+    why:`Mặt cầu x² + y² + z² − 2ax − 2by − 2cz + d = 0 có tâm I(a; b; c) và R = √(a² + b² + c² − d). Ở đây a = ${N(I[0])}, b = ${N(I[1])}, c = ${N(I[2])}, d = ${N(d)} nên R = √(${len2(I)} − ${PR(d)}) = √${r2} = ${rtxt(r2)}.`,
+    fig:null,chk:{ok:len2(I)-d===r2}};
+});
+GEN[6].push(()=>{
+  const {n,len}=nrm(),I=rp3(4),k=nz(-4,4),d=k*len-dot3(n,I),r=Math.abs(k);
+  const ws=[sphS(I,r),sphS(I,r*len),sphS(I,r*r*len),sphS(mul3(-1,I),r*r)];
+  return{t:`Trong không gian Oxyz, phương trình mặt cầu tâm ${ctr(I)} và tiếp xúc với mặt phẳng (P): ${planeS(n[0],n[1],n[2],d)} là:`,
+    correct:sphS(I,r*r),wrongs:ws.filter(x=>x!==sphS(I,r*r)),pad:()=>sphS(I,r*r+ri(-5,5)),
+    why:`Mặt cầu tiếp xúc (P) nên R = d(I, (P)) = |${N(dot3(n,I)+d)}| / √${len2(n)} = ${Math.abs(k*len)}/${len} = ${r}. Phương trình: ${sphS(I,r*r)}.`,
+    fig:null,chk:{ok:Math.abs(Math.abs(dot3(n,I)+d)/Math.sqrt(len2(n))-r)<1e-9}};
+});
+GEN[6].push(()=>{
+  const I=rp3(3),s=len2(I),ok=`m < ${s}`;
+  return{t:`Trong không gian Oxyz, phương trình ${sphX(I,0).replace(' = 0','')} + m = 0 là phương trình mặt cầu khi và chỉ khi:`,
+    correct:ok,wrongs:[`m > ${s}`,`m ≤ ${s}`,`m < ${-s}`,`m = ${s}`],pad:()=>`m < ${s+ri(1,6)}`,
+    why:`Với a = ${N(I[0])}, b = ${N(I[1])}, c = ${N(I[2])}, điều kiện để có mặt cầu là a² + b² + c² − m > 0 ⇔ ${s} − m > 0 ⇔ m < ${s}.`,
+    fig:null,chk:{ok:true}};
+});
+GEN[6].push(()=>{
+  const I=rp3(3),pr=pick([[9,[[1,2,2],[3,0,0]]],[25,[[3,4,0],[0,0,5],[0,3,4]]],[36,[[2,4,4],[6,0,0]]],[49,[[2,3,6],[6,3,2],[3,6,2],[0,0,7]]]]),r2=pr[0];
+  const o0=pick(pr[1]),o=permute(o0,pick([[0,1,2],[1,2,0],[2,0,1],[0,2,1],[1,0,2],[2,1,0]])).map(v=>v*sg()),X=add3(I,o);
+  const ws=[];let tries=0;while(ws.length<3&&tries++<200){const w=add3(I,rp3(5));if(len2(sub3(w,I))!==r2&&!ws.some(x=>x.join()===w.join()))ws.push(w)}
+  return{t:`Trong không gian Oxyz, cho mặt cầu (S): ${sphS(I,r2)}. Điểm nào sau đây thuộc mặt cầu (S)?`,
+    correct:`A${P3(...X)}`,wrongs:ws.map(x=>`A${P3(...x)}`),pad:()=>`A${P3(...add3(I,rp3(6)))}`,
+    why:`Điểm A thuộc (S) khi IA² = R². Với A${P3(...X)}: IA² = ${PR(o[0])}² + ${PR(o[1])}² + ${PR(o[2])}² = ${r2} = R². Với các điểm còn lại IA² ≠ ${r2}.`,
+    fig:null,chk:{ok:len2(sub3(X,I))===r2}};
+});
+
+/* ======== Dạng 7: bài toán thực tế ======== */
+GEN[7].push(()=>{
+  const R0=pick([5,8,10,12,15,20,25,30,40,50]);
+  return{t:`Đài kiểm soát không lưu được đặt tại gốc tọa độ O của hệ trục Oxyz (đơn vị km) và theo dõi được mọi máy bay trong phạm vi ${R0} km. Phương trình mặt cầu giới hạn vùng theo dõi là:`,
+    correct:`x² + y² + z² = ${R0*R0}`,wrongs:[`x² + y² + z² = ${R0}`,`x² + y² + z² = ${2*R0}`,`(x − ${R0})² + y² + z² = ${R0*R0}`,`x² + y² + z² = ${R0*R0+R0}`],pad:()=>`x² + y² + z² = ${R0*R0+ri(-9,9)*5}`,
+    why:`Vùng theo dõi là mặt cầu tâm O(0; 0; 0), bán kính R = ${R0} km nên phương trình là x² + y² + z² = ${R0}² = ${R0*R0}.`,
+    fig:{pts:[['O',0,0,0]],vecs:[],sphere:{c:[0,0,0],r:R0}},chk:{ok:true}};
+});
+GEN[7].push(()=>{
+  const cases=[[10,[6,8,0],'on'],[7,[2,3,6],'on'],[9,[1,4,8],'on'],[13,[3,4,12],'on']];
+  const [R0,o0,kind0]=pick(cases);
+  const kind=pick(['in','out','on']);
+  const o=permute(o0,pick([[0,1,2],[1,2,0],[2,0,1],[0,2,1],[1,0,2],[2,1,0]])).map(v=>v*sg());
+  const f=kind==='on'?1:kind==='in'?pick([0.5]):pick([2]);
+  let M=o.map(v=>v*f);if(kind==='in'&&M.some(v=>!Number.isInteger(v)))M=o.map(v=>Math.trunc(v/2));
+  const D=len2(M),txt={in:'Máy bay nằm trong vùng theo dõi',out:'Máy bay nằm ngoài vùng theo dõi',on:'Máy bay nằm trên mặt giới hạn của vùng theo dõi'};
+  const real=D<R0*R0?'in':D>R0*R0?'out':'on';
+  return{t:`Một đài radar đặt tại gốc tọa độ O của hệ trục Oxyz (đơn vị km), theo dõi được các máy bay trong phạm vi ${R0} km. Một máy bay đang ở vị trí ${PT3('M',M)}. Khẳng định nào sau đây đúng?`,
+    correct:txt[real],wrongs:[txt.in,txt.out,txt.on,'Không đủ dữ kiện để kết luận'].filter(x=>x!==txt[real]),pad:()=>'Không đủ dữ kiện để kết luận',
+    why:`OM² = ${PR(M[0])}² + ${PR(M[1])}² + ${PR(M[2])}² = ${D}, còn R² = ${R0*R0}. ${D<R0*R0?`Vì OM² < R² nên máy bay trong vùng theo dõi.`:D>R0*R0?`Vì OM² > R² nên máy bay ngoài vùng theo dõi.`:`Vì OM² = R² nên máy bay ở đúng mặt giới hạn.`}`,
+    fig:{pts:[['O',0,0,0],['M',...M]],vecs:[{a:[0,0,0],b:M,l:'OM',c:0}],sphere:{c:[0,0,0],r:R0}},chk:{ok:real===kind||(kind==='in'&&real!=='out')}};
+});
+GEN[7].push(()=>{
+  const T=pick([2,3,4,5]),A=rp3(6),e=[nz(-3,3),ri(-3,3),nz(-3,3)],B=add3(A,mul3(T,e)),t=ri(1,T-1),pos=add3(A,mul3(t,e));
+  const ws=[add3(A,mul3(t+1,e)),add3(A,mul3(t-1,e)),add3(A,e.map(v=>v*t*T)),B];
+  const w=[];for(const x of ws){if(x.join()!==pos.join()&&!w.some(y=>y.join()===x.join()))w.push(x)}
+  return{t:`Một máy bay không người lái bay thẳng đều từ vị trí ${PT3('A',A)} đến vị trí ${PT3('B',B)} (đơn vị m) trong ${T} giây. Sau ${t} giây kể từ lúc xuất phát, máy bay ở vị trí có tọa độ:`,
+    correct:P3(...pos),wrongs:w.map(x=>P3(...x)),pad:()=>P3(...add3(pos,[ri(-2,2),ri(-2,2),ri(1,3)])),
+    why:`${V('AB')} = ${P3(...sub3(B,A))}. Sau ${t} giây máy bay đi được ${frS(t,T)} quãng đường, vị trí là A + ${frS(t,T)}${V('AB')} = ${P3(...pos)}.`,
+    fig:{pts:[['A',...A],['B',...B],['D',...pos]],vecs:[{a:A,b:B,l:'AB',c:0}]},chk:{ok:par3(sub3(pos,A),sub3(B,A))&&len2(sub3(pos,A))*T*T===len2(sub3(B,A))*t*t}};
+});
+GEN[7].push(()=>{
+  const t=pick(TR3),sgn=[sg(),sg(),sg()],d=[t[0]*sgn[0],t[1]*sgn[1],t[2]*sgn[2]],A=rp3(5),B=add3(A,d),L=t[3];
+  return{t:`Hai đỉnh tháp A và B được đặt trong hệ trục Oxyz (đơn vị m) với ${PT3('A',A)} và ${PT3('B',B)}. Người ta căng một sợi cáp thẳng nối A với B. Chiều dài sợi cáp là:`,
+    correct:`${L} m`,wrongs:[`${L+1} m`,`${L-1} m`,`${Math.abs(d[0])+Math.abs(d[1])+Math.abs(d[2])} m`,`${L*L} m`],pad:()=>`${L+ri(-5,5)} m`,
+    why:`AB = √((x<sub>B</sub> − x<sub>A</sub>)² + (y<sub>B</sub> − y<sub>A</sub>)² + (z<sub>B</sub> − z<sub>A</sub>)²) = √(${PR(d[0])}² + ${PR(d[1])}² + ${PR(d[2])}²) = √${len2(d)} = ${L} m.`,
+    fig:{pts:[['A',...A],['B',...B]],vecs:[{a:A,b:B,l:'AB',c:0}]},chk:{ok:len2(d)===L*L}};
+});
+GEN[7].push(()=>{
+  const {n,len}=nrm(),M=rp3(5),k=nz(-5,5),d=k*len-dot3(n,M),K=Math.abs(k);
+  return{t:`Trong hệ trục Oxyz (đơn vị m), mặt phẳng mái nhà có phương trình (P): ${planeS(n[0],n[1],n[2],d)}. Một thiết bị bay (drone) đang ở vị trí ${PT3('D',M)}. Khoảng cách từ drone đến mặt phẳng mái nhà là:`,
+    correct:`${K} m`,wrongs:[`${K*len} m`,`${K+1} m`,`${K+2} m`,K>1?`${K-1} m`:`${K*3} m`],pad:()=>`${ri(1,14)} m`,
+    why:`d(D, (P)) = |${N(dot3(n,M)+d)}| / √${len2(n)} = ${Math.abs(k*len)}/${len} = ${K} m.`,
+    fig:null,chk:{ok:Math.abs(Math.abs(dot3(n,M)+d)/Math.sqrt(len2(n))-K)<1e-9}};
+});
+GEN[7].push(()=>{
+  const A=rp3(6),v=[nz(-4,4),nz(-4,4),ri(-3,3)],t=ri(2,6),pos=add3(A,mul3(t,v));
+  return{t:`Một khinh khí cầu ở vị trí ${PT3('A',A)} (đơn vị km) và chuyển động thẳng đều với vận tốc ${V('v')} = ${P3(...v)} (km/giờ) trong hệ trục Oxyz. Sau ${t} giờ khinh khí cầu ở vị trí:`,
+    correct:P3(...pos),wrongs:[P3(...add3(A,v)),P3(...mul3(t,add3(A,v))),P3(...mul3(t,v)),P3(...sub3(A,mul3(t,v)))],pad:()=>P3(...add3(pos,[ri(-3,3),ri(-3,3),ri(1,3)])),
+    why:`Vị trí sau ${t} giờ là A + ${t}${V('v')} = (${N(A[0])} + ${PR(t*v[0])}; ${N(A[1])} + ${PR(t*v[1])}; ${N(A[2])} + ${PR(t*v[2])}) = ${P3(...pos)}. Đây cũng là điểm ứng với t = ${t} trên đường thẳng ${sysH(A,v)}`,
+    fig:{pts:[['A',...A],['B',...pos]],vecs:[{a:A,b:pos,l:`${t}v`,c:0}]},chk:{ok:true}};
+});
+
+/* ===== bổ sung theo SGK Kết nối tri thức (Bài 1-3, Chương V) ===== */
+const sysT=(M,u)=>`${comp('x',M[0],u[0])}, ${comp('y',M[1],u[1])}, ${comp('z',M[2],u[2])}`;
+const areaTxt=L=>{let k=1,m=L;for(let f=Math.floor(Math.sqrt(L));f>1;f--){if(L%(f*f)===0){k=f;m=L/(f*f);break}}if(m===1)return frS(k,2);if(k%2===0)return `${k===2?'':k/2}√${m}`;return fr(`${k===1?'':k}√${m}`,2)};
+const canon=(M,u)=>[0,1,2].map(i=>fr(`${'xyz'[i]}${M[i]===0?'':(M[i]<0?' + '+(-M[i]):' − '+M[i])}`,N(u[i]))).join(' = ');
+const nzv=m=>[nz(-m,m),nz(-m,m),nz(-m,m)];
+const hv=(a)=>a.map(x=>x/g3(a));
+const mdl=(p)=>{let v=p.slice(),g=g3(v);v=v.map(x=>x/g);return v};
+const permSign=t=>{const p=shuffle([t[0],t[1],t[2]]);return p.map(x=>x*sg())};
+/* --- Dạng 1: lập phương trình mặt phẳng --- */
+GEN[1].push(()=>{ // qua A, B và vuông góc (Q)
+  let u,v,n;do{u=nzv(3);v=nzv(3);n=cross3(u,v)}while(zero3(n)||g3(n)>3);
+  const A=rp3(4),B=add3(A,u),d=-dot3(n,A);
+  const ws=[[...cross3(u,v).map(x=>-x),d],[...v,-dot3(v,A)],[...u,-dot3(u,A)],[...n,d+ri(1,3)]];
+  const o=planeOpts([...n,d],ws.map((w,i)=>i===0?[...n,dot3(n,A)]:w));
+  return{t:`Trong không gian Oxyz, mặt phẳng (P) đi qua hai điểm ${PT3('A',A)}, ${PT3('B',B)} và vuông góc với mặt phẳng (Q): ${planeS(v[0],v[1],v[2],ri(-5,5))} có phương trình là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padPl([...n,d]),
+    why:`${V('AB')} = ${P3(...u)}, ${V('n')}<sub>Q</sub> = ${P3(...v)}. Vì (P) chứa A, B và (P) ⊥ (Q) nên ${V('n')}<sub>P</sub> = [${V('AB')}, ${V('n')}<sub>Q</sub>] = ${P3(...n)}. Mặt phẳng (P) đi qua A: ${planeS(n[0],n[1],n[2],d)}.`,
+    fig:null,chk:{ok:dot3(n,u)===0&&dot3(n,v)===0&&dot3(n,A)+d===0&&dot3(n,B)+d===0}};
+});
+GEN[1].push(()=>{ // qua M, vuông góc hai mp
+  let a,b,n;do{a=nzv(3);b=nzv(3);n=cross3(a,b)}while(zero3(n)||g3(n)>3);
+  const M=rp3(4),d=-dot3(n,M),d1=ri(-4,4),d2=ri(-4,4);
+  const o=planeOpts([...n,d],[[...n,-d],[...add3(a,b),-dot3(add3(a,b),M)],[...sub3(a,b),-dot3(sub3(a,b),M)],[...n,d+2]]);
+  return{t:`Trong không gian Oxyz, mặt phẳng đi qua ${PT3('M',M)} và vuông góc với hai mặt phẳng (P): ${planeS(a[0],a[1],a[2],d1)}, (Q): ${planeS(b[0],b[1],b[2],d2)} có phương trình là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padPl([...n,d]),
+    why:`${V('n')}<sub>P</sub> = ${P3(...a)}, ${V('n')}<sub>Q</sub> = ${P3(...b)}. Mặt phẳng cần tìm nhận [${V('n')}<sub>P</sub>, ${V('n')}<sub>Q</sub>] = ${P3(...n)} làm VTPT và đi qua M nên có phương trình ${planeS(n[0],n[1],n[2],d)}.`,
+    fig:null,chk:{ok:dot3(n,a)===0&&dot3(n,b)===0&&dot3(n,M)+d===0}};
+});
+GEN[1].push(()=>{ // mặt chắn
+  const a=nz(-5,5),b=nz(-5,5),c=nz(-5,5);
+  const A=[a,0,0],B=[0,b,0],C=[0,0,c];
+  const co=[b*c,a*c,a*b,-a*b*c],g=g3(co);let k=co.map(x=>x/g);
+  const o=planeOpts(k,[[...[b*c,a*c,a*b].map(x=>x/g),a*b*c/g],[c,b,a,-a*b*c/g3([a,b,c,a*b*c])],[a,b,c,-1],[k[0],k[1],k[2],-k[3]]]);
+  return{t:`Trong không gian Oxyz, mặt phẳng đi qua ba điểm ${PT3('A',A)}, ${PT3('B',B)}, ${PT3('C',C)} có phương trình là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padPl(k),
+    why:`Ba điểm nằm trên ba trục tọa độ nên dùng phương trình mặt chắn: ${fr('x',N(a))} + ${fr('y',N(b))} + ${fr('z',N(c))} = 1. Quy đồng và rút gọn ta được ${planeS(...k)}.`,
+    fig:{pts:[['A',...A],['B',...B],['C',...C]],vecs:[],poly:[A,B,C,A]},chk:{ok:co[0]*0+k[0]*a+k[3]===0&&k[1]*b+k[3]===0&&k[2]*c+k[3]===0}};
+});
+GEN[1].push(()=>{ // chứa trục tọa độ
+  const ax=pick(['Ox','Oy','Oz']);let M;do M=rp3(5);while(ax==='Ox'&&M[1]===0&&M[2]===0||ax==='Oy'&&M[0]===0&&M[2]===0||ax==='Oz'&&M[0]===0&&M[1]===0);
+  let n;if(ax==='Ox')n=[0,M[2],-M[1]];else if(ax==='Oy')n=[M[2],0,-M[0]];else n=[M[1],-M[0],0];
+  const g=g3(n);n=n.map(x=>x/g);
+  const o=planeOpts([...n,0],[[n[1],n[0],n[2],0],[n[0],-n[1],n[2],0],[n[2],n[1],n[0],0],[n[0],n[1],n[2],1]]);
+  return{t:`Trong không gian Oxyz, mặt phẳng chứa trục ${ax} và đi qua điểm ${PT3('M',M)} có phương trình là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padPl([...n,0]),
+    why:`Mặt phẳng chứa trục ${ax} nên đi qua O và nhận [${V('i')}, ${V('OM')}] cùng phương làm VTPT${ax==='Ox'?'':' (tương tự với trục này)'}. Ta được VTPT ${P3(...n)}, mặt phẳng qua O nên phương trình là ${planeS(...n,0)}.`,
+    fig:null,chk:{ok:dot3(n,M)===0&&(ax==='Ox'?n[0]===0:ax==='Oy'?n[1]===0:n[2]===0)}};
+});
+/* --- Dạng 2: khoảng cách, diện tích, thể tích --- */
+GEN[2].push(()=>{ // thể tích tứ diện
+  let A,B,C,D,det;do{A=rp3(3);B=rp3(3);C=rp3(3);D=rp3(3);det=dot3(sub3(B,A),cross3(sub3(C,A),sub3(D,A)))}while(det===0||Math.abs(det)>60);
+  const V6=Math.abs(det),V1=frS(V6,6);
+  const ws=[frS(V6,3),''+V6,frS(V6,2),frS(V6+6,6),frS(V6+3,6)];
+  return{t:`Trong không gian Oxyz, cho tứ diện ABCD với ${PT3('A',A)}, ${PT3('B',B)}, ${PT3('C',C)}, ${PT3('D',D)}. Thể tích của tứ diện bằng:`,
+    correct:V1,wrongs:ws,pad:()=>frS(V6+ri(1,9),6),
+    why:`${V('AB')} = ${P3(...sub3(B,A))}, ${V('AC')} = ${P3(...sub3(C,A))}, ${V('AD')} = ${P3(...sub3(D,A))}. Tích hỗn tạp [${V('AB')}, ${V('AC')}] · ${V('AD')} = ${N(det)}. Thể tích V = ${fr('1','6')}·|${N(det)}| = ${V1}.`,
+    fig:{pts:[['A',...A],['B',...B],['C',...C],['D',...D]],vecs:[],poly:[A,B,C,A,D,B,D,C]},chk:{ok:Math.abs(Math.abs(det)/6-eval0(V6,6))<1e-9}};
+});
+GEN[2].push(()=>{ // diện tích tam giác
+  let A,B,C,x;do{A=rp3(4);B=rp3(4);C=rp3(4);x=cross3(sub3(B,A),sub3(C,A))}while(zero3(x)||len2(x)>150);
+  const L=len2(x),s=sq(L),ans=areaTxt(L);
+  const ws=[s,areaTxt(L+ri(1,6)),areaTxt(len2(sub3(B,A))),areaTxt(L*4),areaTxt(L+ri(7,15))];
+  return{t:`Trong không gian Oxyz, cho tam giác ABC với ${PT3('A',A)}, ${PT3('B',B)}, ${PT3('C',C)}. Diện tích tam giác ABC bằng:`,
+    correct:ans,wrongs:ws,pad:()=>areaTxt(L+ri(21,40)),
+    why:`${V('AB')} = ${P3(...sub3(B,A))}, ${V('AC')} = ${P3(...sub3(C,A))}. [${V('AB')}, ${V('AC')}] = ${P3(...x)} có độ dài √${L}. Diện tích S = ${fr('1','2')}·|[${V('AB')}, ${V('AC')}]| = ${ans}.`,
+    fig:{pts:[['A',...A],['B',...B],['C',...C]],vecs:[],poly:[A,B,C,A]},chk:{ok:Math.abs(0.5*Math.sqrt(L)-0.5*Math.hypot(...x))<1e-9}};
+});
+function eval0(n,d){return n/d}
+GEN[2].push(()=>{ // khoảng cách điểm đến đường thẳng
+  const {n:u,len:L}=nrm();let e,w;do{e=nzv(2);w=cross3(u,e)}while(zero3(w));
+  const A=rp3(3),s=ri(-2,2),M=add3(A,add3(w,mul3(s,u))),r2=len2(w),sw=sq(r2);
+  const ws=[sq(len2(sub3(M,A))),''+(r2),sq(r2+L*L),sq(len2(cross3(sub3(M,A),u)))];
+  return{t:`Trong không gian Oxyz, cho đường thẳng d: ${sysH(A,u)} và điểm ${PT3('M',M)}. Khoảng cách từ M đến d bằng:`,
+    correct:sw,wrongs:ws,pad:()=>sq(r2+ri(1,12)),
+    why:`d đi qua A${P3(...A)} có VTCP ${V('u')} = ${P3(...u)}, ${V('AM')} = ${P3(...sub3(M,A))}. [${V('AM')}, ${V('u')}] = ${P3(...cross3(sub3(M,A),u))}. d(M, d) = |[${V('AM')}, ${V('u')}]| / |${V('u')}| = √${len2(cross3(sub3(M,A),u))} / ${L} = ${sw}.`,
+    fig:null,chk:{ok:Math.abs(Math.hypot(...cross3(sub3(M,A),u))/L-Math.sqrt(r2))<1e-9}};
+});
+/* --- Dạng 3: phương trình đường thẳng --- */
+GEN[3].push(()=>{ // chính tắc
+  const M=rp3(5),u=nzv(4);
+  const ws=[canon(mul3(-1,M),u),canon(M,[u[1],u[0],u[2]]),canon(M,mul3(-1,u).map((x,i)=>i===0?-x:x)),canon(mul3(-1,M),mul3(-1,u).map((x,i)=>i===1?-x:x))];
+  return{t:`Trong không gian Oxyz, phương trình chính tắc của đường thẳng đi qua ${PT3('M',M)} và có vectơ chỉ phương ${V('u')} = ${P3(...u)} là:`,
+    correct:canon(M,u),wrongs:ws,pad:()=>canon(add3(M,[ri(-1,1),ri(-1,1),1]),u),
+    why:`Đường thẳng đi qua M(x<sub>0</sub>; y<sub>0</sub>; z<sub>0</sub>) có VTCP (a; b; c) với abc ≠ 0 có phương trình chính tắc ${fr('x − x<sub>0</sub>','a')} = ${fr('y − y<sub>0</sub>','b')} = ${fr('z − z<sub>0</sub>','c')}.`,
+    fig:null,chk:{ok:u.every(x=>x!==0)}};
+});
+GEN[3].push(()=>{ // song song với d
+  const M=rp3(5),M0=rp3(4),u=nzv(3),k=pick([2,-1,3]);
+  const c=[M,u];
+  const o=lineOpts(c,[[M0,u],[M,mul3(-1,[u[0],-u[1],u[2]])],[M,[u[1],u[0],u[2]]],[M,[u[0],u[1],u[2]+1]]]);
+  return{t:`Trong không gian Oxyz, đường thẳng đi qua ${PT3('M',M)} và song song với đường thẳng d: ${sysH(M0,mul3(k,u))} có phương trình tham số là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padLine(c),
+    why:`d có VTCP ${P3(...mul3(k,u))}, cùng phương với ${P3(...u)}. Đường thẳng cần tìm song song với d nên nhận ${P3(...u)} làm VTCP và đi qua M: ${sysT(M,u)}.`,
+    fig:null,chk:{ok:par3(u,mul3(k,u))}};
+});
+GEN[3].push(()=>{ // trung tuyến
+  const A=rp3(4),Mm=rp3(3),B=rp3(3),C=sub3(mul3(2,Mm),B);
+  const MA=sub3(Mm,A);if(zero3(MA))return GEN[3][GEN[3].length-1]();
+  const c=[A,MA];
+  const o=lineOpts(c,[[A,add3(sub3(B,A),sub3(C,A))],[A,sub3(B,A)],[B,sub3(Mm,B)],[A,sub3(C,B)]]);
+  return{t:`Trong không gian Oxyz, cho tam giác ABC với ${PT3('A',A)}, ${PT3('B',B)}, ${PT3('C',C)}. Đường trung tuyến AM (M là trung điểm BC) có phương trình tham số là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padLine(c),
+    why:`M là trung điểm BC nên M${P3(...Mm)}. ${V('AM')} = ${P3(...MA)} là một VTCP của AM, đường thẳng qua A nên có phương trình ${sysT(A,MA)}.`,
+    fig:{pts:[['A',...A],['B',...B],['C',...C],['M',...Mm]],vecs:[],poly:[A,B,C,A,Mm]},chk:{ok:dot3(sub3(B,Mm),[1,1,1])+dot3(sub3(C,Mm),[1,1,1])===0}};
+});
+/* --- Dạng 4: giao tuyến, hình chiếu, đối xứng --- */
+GEN[4].push(()=>{ // giao tuyến hai mp
+  let a,b,u;do{a=nzv(3);b=nzv(3);u=cross3(a,b)}while(zero3(u)||g3(u)>3);
+  const d1=ri(-5,5),d2=ri(-5,5);
+  const o=vecOpts(u,[add3(a,b),sub3(a,b),[u[1],u[0],u[2]],[a[0]*b[0],a[1]*b[1],a[2]*b[2]],mul3(-1,[u[0],u[1],-u[2]])]);
+  return{t:`Trong không gian Oxyz, giao tuyến của hai mặt phẳng (P): ${planeS(a[0],a[1],a[2],d1)} và (Q): ${planeS(b[0],b[1],b[2],d2)} có một vectơ chỉ phương là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padVec(u),
+    why:`${V('n')}<sub>P</sub> = ${P3(...a)}, ${V('n')}<sub>Q</sub> = ${P3(...b)}. Giao tuyến vuông góc với cả hai VTPT nên có VTCP ${V('u')} = [${V('n')}<sub>P</sub>, ${V('n')}<sub>Q</sub>] = ${P3(...u)}.`,
+    fig:null,chk:{ok:dot3(u,a)===0&&dot3(u,b)===0}};
+});
+GEN[4].push(()=>{ // hình chiếu lên mp
+  const {n,len}=nrm(),H=nzv(4),k=nz(-2,2),d=-dot3(n,H),M=add3(H,mul3(k,n));
+  const ws=[sub3(H,mul3(k,n)),add3(M,n),sub3(M,n),mul3(-1,H),add3(H,mul3(2,n))];
+  const o=vecOpts(H,ws);
+  return{t:`Trong không gian Oxyz, hình chiếu vuông góc của điểm ${PT3('M',M)} lên mặt phẳng (P): ${planeS(n[0],n[1],n[2],d)} là điểm H có tọa độ:`,
+    correct:o.correct.replace(/^/,''),wrongs:o.wrongs,pad:padVec(H),
+    why:`Đường thẳng qua M vuông góc (P): ${V('MH')} = t${P3(...n)}, H = ${P3(...add3(M,[0,0,0]))} + t·n. Thay vào (P): ${N(dot3(n,M)+d)} + t·${len2(n)} = 0 ⇒ t = ${N(-k)}. Vậy H = ${P3(...H)}.`,
+    fig:null,chk:{ok:dot3(n,H)+d===0&&par3(sub3(M,H),n)}};
+});
+GEN[4].push(()=>{ // đối xứng qua mp
+  const {n}=nrm(),H=nzv(4),k=nz(-2,2),d=-dot3(n,H),M=add3(H,mul3(k,n)),M2=sub3(H,mul3(k,n));
+  const o=vecOpts(M2,[H,mul3(-1,M),sub3(M,mul3(2,n)),add3(M,mul3(k,n)),sub3(mul3(2,M),H)]);
+  return{t:`Trong không gian Oxyz, điểm đối xứng của ${PT3('M',M)} qua mặt phẳng (P): ${planeS(n[0],n[1],n[2],d)} có tọa độ là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padVec(M2),
+    why:`Hình chiếu của M lên (P) là H = ${P3(...H)} (giải t từ ${V('MH')} = t${P3(...n)}, H ∈ (P)). H là trung điểm MM′ nên M′ = 2H − M = ${P3(...M2)}.`,
+    fig:null,chk:{ok:dot3(n,H)+d===0&&add3(M,M2).every((x,i)=>x===2*H[i])}};
+});
+GEN[4].push(()=>{ // đối xứng qua mp tọa độ / trục
+  const M=nzv(6),w=pick([['mặt phẳng (Oxy)',[M[0],M[1],-M[2]]],['mặt phẳng (Oxz)',[M[0],-M[1],M[2]]],['mặt phẳng (Oyz)',[-M[0],M[1],M[2]]],['trục Ox',[M[0],-M[1],-M[2]]],['trục Oy',[-M[0],M[1],-M[2]]],['trục Oz',[-M[0],-M[1],M[2]]],['gốc tọa độ O',[-M[0],-M[1],-M[2]]]]);
+  const o=vecOpts(w[1],[[M[0],M[1],-M[2]],[M[0],-M[1],M[2]],[-M[0],M[1],M[2]],[M[0],-M[1],-M[2]],[-M[0],M[1],-M[2]],[-M[0],-M[1],M[2]],[-M[0],-M[1],-M[2]]]);
+  return{t:`Trong không gian Oxyz, điểm đối xứng của ${PT3('M',M)} qua ${w[0]} có tọa độ là:`,
+    correct:o.correct,wrongs:o.wrongs,pad:padVec(w[1]),
+    why:`Phép đối xứng qua ${w[0]} giữ nguyên các tọa độ nằm trên ${w[0]} và đổi dấu các tọa độ còn lại. Điểm đối xứng là ${P3(...w[1])}.`,
+    fig:null,chk:{ok:true}};
+});
+/* --- Dạng 6: mặt cầu --- */
+GEN[6].push(()=>{ // qua 4 điểm
+  const t=pick(TR3),I=rp3(3),L=t[3];const pts=[];const seen=new Set();
+  while(pts.length<4){const v=permSign(t.slice(0,3)),k=v.join();if(!seen.has(k)){seen.add(k);pts.push(add3(I,v))}}
+  const r2=L*L,ok=sphS(I,r2);
+  const ws=[sphS(I,L),sphS(mul3(-1,I),r2),sphS(add3(I,[1,0,0]),r2),sphS(I,r2+ri(1,5))];
+  return{t:`Trong không gian Oxyz, mặt cầu đi qua bốn điểm ${PT3('A',pts[0])}, ${PT3('B',pts[1])}, ${PT3('C',pts[2])}, ${PT3('D',pts[3])} có phương trình là:`,
+    correct:ok,wrongs:ws.filter(x=>x!==ok),pad:()=>sphS(add3(I,[ri(-1,1),ri(-1,1),ri(-1,1)]),r2+ri(-3,3)),
+    why:`Gọi tâm I(a; b; c), cần IA = IB = IC = ID. Giải hệ ba phương trình IA² = IB², IA² = IC², IA² = ID² (đều là phương trình bậc nhất) ta được I${P3(...I)}. Bán kính R² = IA² = ${r2}. Vậy (S): ${ok}.`,
+    fig:{pts:pts.map((p,i)=>['ABCD'[i],...p]),vecs:[],sphere:{c:I,r:L}},chk:{ok:pts.every(p=>len2(sub3(p,I))===r2)}};
+});
+GEN[6].push(()=>{ // tâm I qua A
+  const I=rp3(4);let A;do A=add3(I,[ri(-3,3),ri(-3,3),ri(-3,3)]);while(zero3(sub3(A,I)));
+  const r2=len2(sub3(A,I)),ok=sphS(I,r2);
+  const ws=[sphS(I,Math.sqrt(r2)===Math.round(Math.sqrt(r2))?Math.sqrt(r2):r2+1),sphS(A,r2),sphS(mul3(-1,I),r2),sphS(I,len2(A))];
+  return{t:`Trong không gian Oxyz, mặt cầu có tâm ${ctr(I)} và đi qua điểm ${PT3('A',A)} có phương trình là:`,
+    correct:ok,wrongs:ws.filter(x=>x!==ok),pad:()=>sphS(I,r2+ri(1,6)),
+    why:`Bán kính R = IA = √(${PR(A[0]-I[0])}² + ${PR(A[1]-I[1])}² + ${PR(A[2]-I[2])}²) = √${r2}. Phương trình (S): ${ok}.`,
+    fig:{pts:[['I',...I],['A',...A]],vecs:[],poly:[I,A],sphere:{c:I,r:Math.sqrt(r2)}},chk:{ok:true}};
+});
+GEN[6].push(()=>{ // bán kính đường tròn giao tuyến
+  const {n,len}=nrm(),I=rp3(3),h=ri(1,4),R=h+ri(1,3),r2=R*R-h*h,d=h*len-dot3(n,I)*1;
+  const dd=-dot3(n,I)+h*len; // |n.I + dd|/len = h
+  const ws=[sq(R*R+h*h),''+R,''+h,sq(R*R),sq(Math.abs(R*R-2*h*h)||5)];
+  return{t:`Trong không gian Oxyz, cho mặt cầu (S): ${sphS(I,R*R)} và mặt phẳng (P): ${planeS(n[0],n[1],n[2],dd)}. Mặt phẳng (P) cắt (S) theo một đường tròn có bán kính bằng:`,
+    correct:sq(r2),wrongs:ws.filter(x=>x!==sq(r2)),pad:()=>sq(r2+ri(1,9)),
+    why:`(S) có tâm I${P3(...I)}, R = ${R}. d(I, (P)) = |${N(dot3(n,I)+dd)}|/${len} = ${h}. Bán kính đường tròn giao tuyến r = √(R² − d²) = √(${R*R} − ${h*h}) = ${sq(r2)}.`,
+    fig:null,chk:{ok:Math.abs(Math.abs(dot3(n,I)+dd)/len-h)<1e-9}};
+});
+GEN[6].push(()=>{ // số điểm chung đường thẳng - mặt cầu
+  const {n:u,len:L}=nrm();let e,w;do{e=nzv(2);w=cross3(u,e)}while(zero3(w));
+  const A=rp3(3),s=ri(-2,2),I=add3(A,add3(w,mul3(s,u))),dist2=len2(w),dist=Math.sqrt(dist2);
+  const R2=pick([dist2,dist2,Math.max(1,dist2-pick([1,2,3])),dist2+pick([2,5,11])]),cnt=R2===dist2?1:R2<dist2?0:2;
+  return{t:`Trong không gian Oxyz, cho mặt cầu (S): ${sphS(I,R2)} và đường thẳng d: ${sysH(A,u)}. Số điểm chung của d và (S) là:`,
+    correct:''+cnt,wrongs:['0','1','2','Vô số'].filter(x=>x!==''+cnt),pad:()=>'3',
+    why:`(S) có tâm I${P3(...I)}, R² = ${R2}. d đi qua A${P3(...A)}, VTCP ${P3(...u)} nên d(I, d) = |[${V('AI')}, ${V('u')}]|/|${V('u')}| = √${dist2}. So sánh d(I, d)² = ${dist2} với R² = ${R2}: ${cnt===1?'bằng nhau nên d tiếp xúc (S), có 1 điểm chung':cnt===0?'khoảng cách lớn hơn bán kính nên d không cắt (S), có 0 điểm chung':'khoảng cách nhỏ hơn bán kính nên d cắt (S) tại 2 điểm'}.`,
+    fig:null,chk:{ok:Math.abs(Math.hypot(...cross3(sub3(I,A),u))/L-dist)<1e-9}};
+});
+/* --- Dạng 7: thực tế --- */
+GEN[7].push(()=>{ // máy bay hạ cánh
+  const k=ri(1,3),t0=ri(2,6),h=k*t0,u=[ri(-4,4)*1||3,ri(-4,4)||2,-k],A=[ri(-6,6),ri(-6,6),h],H=add3(A,mul3(t0,u));
+  const ok=`(${N(H[0])}; ${N(H[1])}; 0)`,w=[`(${N(A[0]+u[0])}; ${N(A[1]+u[1])}; 0)`,`(${N(A[0]-t0*u[0])}; ${N(A[1]-t0*u[1])}; 0)`,`(${N(A[0])}; ${N(A[1])}; 0)`,`(${N(H[0]+u[0])}; ${N(H[1]+u[1])}; 0)`];
+  return{t:`Trong hệ tọa độ Oxyz (đơn vị: km, mặt đất là mặt phẳng (Oxy)), một máy bay đang ở vị trí ${PT3('A',A)} và bay thẳng theo hướng vectơ ${V('u')} = ${P3(...u)}. Máy bay sẽ chạm mặt đất tại điểm có tọa độ:`,
+    correct:ok,wrongs:w,pad:()=>`(${N(H[0]+ri(-3,3))}; ${N(H[1]+ri(-3,3))}; 0)`,
+    why:`Đường bay: ${sysT(A,u)}. Máy bay chạm đất khi z = 0 ⇒ ${h} − ${k===1?'':k}t = 0 ⇒ t = ${t0}. Thay vào ta được ${ok}.`,
+    fig:null,chk:{ok:A[2]+t0*u[2]===0}};
+});
+GEN[7].push(()=>{ // zipline / cáp treo
+  const k=pick([3,4,5]);const e=nzv(3),A=rp3(5),B=add3(A,mul3(k,e)),j=ri(1,k-1),P=add3(A,mul3(j,e));
+  const ok=`(${N(P[0])}; ${N(P[1])}; ${N(P[2])})`;
+  const w=[add3(A,mul3(k-j,e)),add3(A,mul3(j+1,e)),mul3(j,e),add3(B,mul3(j,e))].map(p=>`(${N(p[0])}; ${N(p[1])}; ${N(p[2])})`);
+  return{t:`Một đường zipline nối hai trụ ${PT3('A',A)} và ${PT3('B',B)} (đơn vị: mét). Người chơi trượt thẳng từ A về B. Khi đã đi được ${fr(j,k)} quãng đường AB, người đó ở vị trí có tọa độ:`,
+    correct:ok,wrongs:w,pad:()=>`(${N(P[0]+ri(-2,2))}; ${N(P[1]+ri(-2,2))}; ${N(P[2]+ri(-2,2))})`,
+    why:`${V('AB')} = ${P3(...sub3(B,A))}. Vị trí P thỏa ${V('AP')} = ${fr(j,k)}${V('AB')} = ${P3(...mul3(j,e))}, nên P = A + ${V('AP')} = ${ok}.`,
+    fig:{pts:[['A',...A],['B',...B],['P',...P]],vecs:[],poly:[A,B]},chk:{ok:P.every((x,i)=>k*(x-A[i])===j*(B[i]-A[i]))}};
+});
+const nm=s=>String(s).replace(/(^|[\s(])-(?=\d)/g,'$1−');
+function build(spec){
+  {const pd=spec.pad;spec.correct=nm(spec.correct);spec.wrongs=spec.wrongs.map(nm);spec.pad=()=>nm(pd())}
+  const seen=new Set([spec.correct]);let w=[];
+  for(const x of spec.wrongs){if(!seen.has(x)){seen.add(x);w.push(x)}}
+  w=shuffle(w).slice(0,3);
+  let t=0;while(w.length<3&&t++<400){const x=spec.pad();if(!seen.has(x)){seen.add(x);w.push(x)}}
+  const opts=shuffle([spec.correct,...w]);
+  return{...spec,opts,ans:opts.indexOf(spec.correct)};
+}
+function makeQ(type){return build(pick(GEN[type])())}
+//GEN>
+
+const TOPICS=[
+ {id:1,name:'Phương trình mặt phẳng',f:`a(x − x<sub>0</sub>) + b(y − y<sub>0</sub>) + c(z − z<sub>0</sub>) = 0, ${V('n')} = (a; b; c)`},
+ {id:2,name:'Khoảng cách và vị trí tương đối của mặt phẳng',f:`d(M, (P)) = ${fr('|ax<sub>0</sub> + by<sub>0</sub> + cz<sub>0</sub> + d|','√(a² + b² + c²)')}`},
+ {id:3,name:'Phương trình đường thẳng',f:`x = x<sub>0</sub> + at, y = y<sub>0</sub> + bt, z = z<sub>0</sub> + ct, ${V('u')} = (a; b; c)`},
+ {id:4,name:'Đường thẳng với mặt phẳng, hai đường thẳng',f:`giao điểm, d ∥ (P) ⇔ ${V('u')} · ${V('n')} = 0, d ⊥ (P) ⇔ ${V('u')} cùng phương ${V('n')}`},
+ {id:5,name:'Góc trong không gian',f:`cos(d<sub>1</sub>, d<sub>2</sub>) = ${fr(`|${V('u')}<sub>1</sub> · ${V('u')}<sub>2</sub>|`,`|${V('u')}<sub>1</sub>| · |${V('u')}<sub>2</sub>|`)}`},
+ {id:6,name:'Phương trình mặt cầu',f:`(x − a)² + (y − b)² + (z − c)² = R²`},
+ {id:7,name:'Bài toán thực tế',f:`Quãng đường bay, vùng phủ sóng, khoảng cách đến mặt phẳng, vị trí sau t giờ`}
+];
+
+const $=s=>document.querySelector(s);
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+const S={mode:'practice',type:1,types:[1,2,3,4,5,6],q:null,done:false,score:0,streak:0,best:0,ok:0,total:0,name:''};
+const WIN=20;
+
+function show(id){
+  for(const s of ['home','setup','quiz','result'])$('#'+s).hidden=s!==id;
+  window.scrollTo(0,0);
+  if(id==='home')renderBoard();
+}
+function renderRecord(){$('#record').textContent=store.get('xyz_record',0)}
+
+/* home */
+function renderHome(){
+  $('#topics').innerHTML=TOPICS.map(t=>`<button class="topic" type="button" data-type="${t.id}"><span class="tag">Dạng ${t.id}</span><h3>${t.name}</h3><span class="f">${t.f}</span></button>`).join('');
+  $('#checks').innerHTML=TOPICS.map(t=>`<label class="check"><input type="checkbox" value="${t.id}" checked><span>${t.id}. ${t.name}</span></label>`).join('');
+}
+function renderBoard(){
+  const h=store.get('xyz_hist',[]);
+  $('#board').hidden=!h.length;
+  $('#boardBody').innerHTML=h.slice(0,8).map(r=>`<tr><td>${esc(r.name)}</td><td>${r.score}</td><td>${r.best}/${WIN}</td><td>${r.win?'Thắng':'Chưa thắng'}</td><td>${r.date}</td></tr>`).join('');
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* quiz */
+const LIMKEY='xyz_limit';
+const sigOf=q=>q.t+'|'+q.correct;
+function resetRun(limit){S.seen=new Set();S.cnt={};S.dead={};S.limit=limit}
+function candTypes(){const ts=S.mode==='challenge'?S.types:[S.type];return ts.filter(t=>(S.cnt[t]||0)<S.limit&&!S.dead[t])}
+function quotaDone(){return candTypes().length===0}
+function startPractice(type){
+  Object.assign(S,{mode:'practice',type,score:0,streak:0,best:0,ok:0,total:0});
+  resetRun(+$('#limitHome').value||10);
+  $('#progWrap').hidden=false;
+  show('quiz');nextQ();
+}
+function startChallenge(){
+  const name=$('#name').value.trim();
+  const types=[...document.querySelectorAll('#checks input:checked')].map(i=>+i.value);
+  const limit=+$('#limitSetup').value||10;
+  if(!name){$('#setupMsg').textContent='Hãy nhập họ và tên học sinh.';$('#name').focus();return}
+  if(!types.length){$('#setupMsg').textContent='Hãy chọn ít nhất một dạng.';return}
+  if(types.length*limit<WIN){$('#setupMsg').textContent=`Cần ít nhất ${WIN} câu: hãy chọn thêm dạng hoặc tăng số câu mỗi dạng (hiện có ${types.length*limit}).`;return}
+  $('#setupMsg').textContent='';
+  Object.assign(S,{mode:'challenge',name,types,score:0,streak:0,best:0,ok:0,total:0});
+  resetRun(limit);
+  $('#progWrap').hidden=false;
+  show('quiz');nextQ();
+}
+function renderStats(){
+  const idx=Object.values(S.cnt).reduce((a,b)=>a+b,0);
+  const max=S.mode==='challenge'?S.types.length*S.limit:S.limit;
+  $('#stats').innerHTML=S.mode==='challenge'
+    ?`<span class="chip">${esc(S.name)}</span><span class="chip">Điểm: <b>${S.score<0?'−'+(-S.score):S.score}</b></span><span class="chip">Chuỗi: <b>${S.streak}/${WIN}</b></span><span class="chip">Câu: <b>${idx}/${max}</b></span>`
+    :`<span class="chip">Đúng: <b>${S.ok}/${S.total}</b></span><span class="chip">Chuỗi: <b>${S.streak}</b></span><span class="chip">Câu: <b>${idx}/${max}</b></span>`;
+  $('#prog').style.width=((S.mode==='challenge'?S.streak/WIN:S.total/S.limit)*100)+'%';
+}
+function bagQ(type){
+  if(S.bagRun!==S.seen){S.bag={};S.bagRun=S.seen}
+  if(!S.bag[type]||!S.bag[type].length)S.bag[type]=shuffle(GEN[type].map((_,i)=>i));
+  return build(GEN[type][S.bag[type].pop()]());
+}
+function nextQ(){
+  let q=null,type=0;
+  while(!q){
+    const c=candTypes();if(!c.length)break;
+    type=pick(c);
+    for(let i=0;i<250;i++){const x=bagQ(type);if(!S.seen.has(sigOf(x))){q=x;break}}
+    if(!q)S.dead[type]=true;
+  }
+  if(!q)return S.mode==='challenge'?finish(false):finishPractice();
+  S.seen.add(sigOf(q));S.cnt[type]=(S.cnt[type]||0)+1;
+  S.q=q;S.done=false;S.curType=type;
+  $('#qtitle').textContent=`Dạng ${type} · ${TOPICS[type-1].name}`;
+  $('#qtext').innerHTML=S.q.t;
+  $('#opts').innerHTML=S.q.opts.map((o,i)=>`<button class="opt" type="button" data-i="${i}"><span class="k">${'ABCD'[i]}</span><span>${o}</span></button>`).join('');
+  $('#fb').hidden=true;
+  renderStats();
+}
+function answer(i){
+  if(S.done||!S.q)return;
+  S.done=true;
+  const good=i===S.q.ans;
+  S.total++;
+  if(good){S.ok++;S.streak++;S.best=Math.max(S.best,S.streak);if(S.mode==='challenge')S.score++}
+  else{S.streak=0;if(S.mode==='challenge')S.score-=2}
+  document.querySelectorAll('.opt').forEach((b,k)=>{
+    b.disabled=true;
+    if(k===S.q.ans){b.classList.add('right');b.querySelector('.k').textContent='✓'}
+    else if(k===i){b.classList.add('wrong');b.querySelector('.k').textContent='✕'}
+  });
+  const v=$('#verdict');
+  v.className='verdict '+(good?'ok':'no');
+  v.textContent=good?(S.mode==='challenge'?'Chính xác! +1 điểm':'Chính xác!'):(S.mode==='challenge'?`Chưa đúng, đáp án là ${'ABCD'[S.q.ans]}. −2 điểm, chuỗi về 0.`:`Chưa đúng, đáp án là ${'ABCD'[S.q.ans]}.`);
+  $('#why').innerHTML=S.q.why;
+  $('#figure').innerHTML=drawFig(S.q.fig);
+  $('#fb').hidden=false;
+  const won=S.mode==='challenge'&&S.streak>=WIN;
+  $('#btnNext').textContent=(won||quotaDone())?'Xem kết quả ➔':'Câu tiếp theo ➔';
+  $('#btnNext').focus({preventScroll:true});
+  renderStats();
+  if(S.mode==='challenge'){ if(S.score>store.get('xyz_record',0)){store.set('xyz_record',S.score);renderRecord()} }
+}
+function onNext(){
+  if(!S.done)return;
+  if(S.mode==='challenge'&&S.streak>=WIN)return finish(true);
+  if(quotaDone())return S.mode==='challenge'?finish(false):finishPractice();
+  nextQ();
+}
+function finishPractice(){
+  const pct=S.total?Math.round(S.ok/S.total*100):0;
+  $('#resName').textContent=`Dạng ${S.type} · ${TOPICS[S.type-1].name}`;
+  $('#resScore').textContent=`${S.ok}/${S.total}`;
+  $('#resMsg').textContent=S.total&&S.ok===S.total?'Tuyệt vời, bạn trả lời đúng tất cả các câu!':`Bạn đã hoàn thành ${S.total} câu của dạng này. Làm lại để gặp các câu mới.`;
+  $('#resSum').innerHTML=`<div><b>${S.ok}/${S.total}</b><span>Số câu đúng</span></div><div><b>${S.best}</b><span>Chuỗi đúng dài nhất</span></div><div><b>${pct}%</b><span>Tỉ lệ đúng</span></div>`;
+  show('result');
+}
+function finish(win){
+  if(S.mode==='challenge'&&S.total>0){
+    const h=store.get('xyz_hist',[]);
+    h.unshift({name:S.name,score:S.score,best:S.best,win:!!win,date:new Date().toLocaleDateString('vi-VN')});
+    store.set('xyz_hist',h.slice(0,30));
+    if(S.score>store.get('xyz_record',0))store.set('xyz_record',S.score);
+    renderRecord();
+    $('#resName').textContent=S.name;
+    $('#resScore').textContent=(S.score<0?'−'+(-S.score):S.score)+' điểm';
+    $('#resMsg').textContent=win?`Chúc mừng, bạn đã trả lời đúng ${WIN} câu liên tiếp!`:`Chuỗi đúng dài nhất của bạn là ${S.best}/${WIN}. Thử lại để vượt qua nhé.`;
+    $('#resSum').innerHTML=`<div><b>${S.ok}/${S.total}</b><span>Số câu đúng</span></div><div><b>${S.best}/${WIN}</b><span>Chuỗi dài nhất</span></div><div><b>${S.total?Math.round(S.ok/S.total*100):0}%</b><span>Tỉ lệ đúng</span></div>`;
+    show('result');
+  }else show('home');
+}
+
+/* figure */
+function drawFig(f){
+  if(!f)return '';
+  const pj=p=>[p[1]-0.4*p[0],p[2]-0.4*p[0]];
+  const all=[[0,0,0]];
+  (f.pts||[]).forEach(p=>all.push([p[1],p[2],p[3]]));
+  (f.vecs||[]).forEach(v=>{all.push(v.a,v.b)});
+  (f.poly||[]).forEach(p=>all.push(p));
+  if(f.sphere){const c=f.sphere.c,r=f.sphere.r;[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]].forEach(d=>all.push([c[0]+r*d[0],c[1]+r*d[1],c[2]+r*d[2]]))}
+  const ext=[0,1,2].map(i=>Math.max(1,...all.map(p=>Math.abs(p[i]))));
+  const axs=[[ext[0],0,0],[0,ext[1],0],[0,0,ext[2]]];
+  const P2=all.map(pj).concat(axs.map(pj),axs.map(a=>pj([-a[0],-a[1],-a[2]])));
+  let x0=Math.min(...P2.map(p=>p[0]))-0.9,x1=Math.max(...P2.map(p=>p[0]))+0.9,y0=Math.min(...P2.map(p=>p[1]))-0.9,y1=Math.max(...P2.map(p=>p[1]))+0.9;
+  const span=Math.max(x1-x0,y1-y0),cx=(x0+x1)/2,cy=(y0+y1)/2;x0=cx-span/2;y0=cy-span/2;
+  const W=300,s=W/span,sx=x=>((x-x0)*s).toFixed(1),sy=y=>(W-(y-y0)*s).toFixed(1);
+  const X=p=>{const q=pj(p);return sx(q[0])+','+sy(q[1])};
+  const xy=p=>{const q=pj(p);return[+sx(q[0]),+sy(q[1])]};
+  const mk=[0,1,2].map(c=>`<marker id="ah${c}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk${c}" d="M0 0L10 5L0 10z"/></marker>`).join('')+
+    `<marker id="axh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mkax" d="M0 0L10 5L0 10z"/></marker>`;
+  let sph='';
+  if(f.sphere){
+    const c=f.sphere.c,r=f.sphere.r,cc=xy(c);
+    sph=`<circle class="g-sph" cx="${cc[0]}" cy="${cc[1]}" r="${(r*s).toFixed(1)}"/>`;
+    const eq=[];for(let i=0;i<=72;i++){const t=i/72*2*Math.PI;eq.push(X([c[0]+r*Math.cos(t),c[1]+r*Math.sin(t),c[2]]))}
+    sph+=`<polyline class="g-sph2" points="${eq.join(' ')}"/>`;
+  }
+  const lb=['x','y','z'];
+  const ax=axs.map((a,i)=>{const e=xy(a),o=xy([-a[0],-a[1],-a[2]]);return `<line class="g-axis" x1="${o[0]}" y1="${o[1]}" x2="${e[0]}" y2="${e[1]}" marker-end="url(#axh)"/><text class="g-tick" x="${e[0]+5}" y="${e[1]-4}">${lb[i]}</text>`}).join('')+`<text class="g-tick" x="${xy([0,0,0])[0]-10}" y="${xy([0,0,0])[1]+11}">O</text>`;
+  let poly='';
+  if(f.poly&&f.poly.length>2)poly=`<polygon class="g-fill" points="${f.poly.map(X).join(' ')}"/><polyline class="g-poly" points="${f.poly.map(X).join(' ')}"/>`;
+  else if(f.poly&&f.poly.length===2)poly=`<polyline class="g-poly" points="${f.poly.map(X).join(' ')}"/>`;
+  const vs=(f.vecs||[]).map(v=>{
+    const a=xy(v.a),b=xy(v.b);
+    return `<line class="g-v${v.c}" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" marker-end="url(#ah${v.c})"/><text class="g-txt" x="${((a[0]+b[0])/2+5).toFixed(1)}" y="${((a[1]+b[1])/2-5).toFixed(1)}">${v.l}</text>`;
+  }).join('');
+  const ps=(f.pts||[]).map(p=>{const q=xy([p[1],p[2],p[3]]);return `<circle class="g-pt" cx="${q[0]}" cy="${q[1]}" r="3.5"/><text class="g-txt" x="${q[0]+6}" y="${q[1]-6}">${p[0]}</text>`}).join('');
+  return `<svg viewBox="0 0 ${W} ${W}" role="img" aria-label="Hình minh họa trong hệ trục Oxyz"><defs>${mk}</defs>${sph}${ax}${poly}${vs}${ps}</svg>`;
+}
+
+/* events */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.type)return startPractice(+t.dataset.type);
+  if(t.dataset.i!==undefined&&t.classList.contains('opt'))return answer(+t.dataset.i);
+  if(t.dataset.go)return show(t.dataset.go);
+});
+$('#btnChallenge').onclick=()=>{$('#setupMsg').textContent='';show('setup');$('#name').focus()};
+$('#btnStart').onclick=startChallenge;
+$('#btnNext').onclick=onNext;
+$('#btnExit').onclick=()=>finish(false);
+$('#btnAgain').onclick=()=>{if(S.mode==='practice')startPractice(S.type);else show('setup')};
+$('#btnClear').onclick=()=>{store.set('xyz_hist',[]);renderBoard()};
+$('#btnBig').onclick=()=>{
+  const on=document.body.classList.toggle('big');
+  $('#btnBig').setAttribute('aria-pressed',on);
+  try{if(on&&document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});else if(!on&&document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}
+};
+$('#name').addEventListener('keydown',e=>{if(e.key==='Enter')startChallenge()});
+document.addEventListener('keydown',e=>{
+  if($('#quiz').hidden||e.target.tagName==='INPUT')return;
+  const k=e.key.toLowerCase(),m={'1':0,'2':1,'3':2,'4':3,a:0,b:1,c:2,d:3};
+  if(!S.done&&k in m&&m[k]<4)answer(m[k]);
+  else if(S.done&&(k==='enter')){e.preventDefault();onNext()}
+});
+
+function setLimit(v){v=+v||10;store.set(LIMKEY,v);$('#limitHome').value=v;$('#limitSetup').value=v}
+$('#limitHome').onchange=e=>setLimit(e.target.value);
+$('#limitSetup').onchange=e=>setLimit(e.target.value);
+setLimit(store.get(LIMKEY,10));
+renderHome();renderRecord();renderBoard();show('home');
+</script>
+
+</body>
+</html>
